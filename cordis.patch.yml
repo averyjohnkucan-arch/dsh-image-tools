@@ -1,0 +1,4 @@
+- insert:
+    - id: dsh-image-tools
+      name: dsh-image-tools
+      config: {}
