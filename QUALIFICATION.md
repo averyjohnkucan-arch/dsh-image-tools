@@ -26,7 +26,7 @@ Model import was checked against actual local Qwen Turbo component files, Krea B
 Earlier integration qualification remains valid for the scheduler/attachment interfaces:
 
 - NInfer DFlash2 answered `ready`, unloaded for rendering, restored, and answered `restored`.
-- Full browser acceptance in a clean web profile installed from GitHub: NInfer discovered/selected the single `image_tools` menu, generated a photograph, restored and displayed the image inline.
+- Full version-0.2.0 browser acceptance from a GitHub-installed profile: NInfer discovered/selected the single `image_tools` menu, generated with `fast_normal_quality`, `Square256`, GPU execution and seed 42, restored and displayed the image inline. End-to-end time was 2m 15s, including tool discovery and model loading.
 - Generated PNG data passed through the actual DSH local attachment store.
 - The current installation uses the local plugin source, existing Tool Manager policy and public Image Tools settings slot.
 
