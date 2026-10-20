@@ -18,7 +18,7 @@ def qwen(job):
     if os.environ.get('DSH_IMAGE_OFFLOAD')=='sequential':pipe.enable_sequential_cpu_offload(gpu_id=job['gpu'])
     else:pipe.enable_model_cpu_offload(gpu_id=job['gpu'])
     pipe.vae.enable_tiling()
-    kwargs=dict(prompt=job['prompt'],negative_prompt=' ',true_cfg_scale=job['profile']['guidance'],width=((job['width']+15)//16)*16,height=((job['height']+15)//16)*16,num_inference_steps=job['steps'],output_resolution=min(512,max(job['width'],job['height'])) if job['quality']=='fast' else 1024,generator=torch.Generator(device='cpu').manual_seed(job['seed']))
+    kwargs=dict(prompt=job['prompt'],negative_prompt=' ',true_cfg_scale=job['profile']['guidance'],width=((job['width']+15)//16)*16,height=((job['height']+15)//16)*16,num_inference_steps=job['steps'],output_resolution=min(512,max(job['width'],job['height'])) if job['profile']['variant']=='turbo' else 1024,generator=torch.Generator(device='cpu').manual_seed(job['seed']))
     if job['task']=='edit':
         images=[]
         for path in job['inputs']:
@@ -28,6 +28,46 @@ def qwen(job):
     kwargs['callback_on_step_end']=progress
     with torch.inference_mode():result=pipe(**kwargs).images[0]
     finish(result,job)
+
+# Official Qwen Turbo checkpoint sample_sigmas, with the terminal zero.
+QWEN_TURBO_SIGMAS='1.0,0.978453,0.95418,0.926626,0.89508,0.845148,0.704534,0.414568,0.0'
+
+def sdcpp_device(job):
+    if job.get('sdDevice'):return job['sdDevice']
+    devices=subprocess.run([job['sdExecutable'],'--list-devices'],capture_output=True,text=True,check=True,timeout=30).stdout
+    gpu_name=subprocess.run(['nvidia-smi',f'--id={job["gpu"]}','--query-gpu=name','--format=csv,noheader'],capture_output=True,text=True,check=True,timeout=10).stdout.strip().casefold()
+    matches=[]
+    for line in devices.splitlines():
+        if '\t' not in line:continue
+        name,description=line.split('\t',1)
+        if gpu_name==description.strip().casefold() or gpu_name in description.casefold():matches.append(name.strip())
+    for prefix in ('CUDA','Vulkan'):
+        found=[name for name in matches if name.upper().startswith(prefix.upper())]
+        if len(found)==1:return found[0]
+        if len(found)>1:raise RuntimeError('Several identical GPU devices detected; set the SD device explicitly in Image Tools settings.')
+    raise RuntimeError('Could not match the selected NVIDIA GPU to sd-cli. Choose an explicit CUDA/Vulkan SD device in Image Tools settings.')
+
+def sdcpp_args(job,device):
+    p=job['profile'];output=str(pathlib.Path(job['directory'])/'native.png')
+    args=[job['sdExecutable'],'--diffusion-model',p['modelPath'],'--llm',p['textEncoderPath'],'--vae',p['vaePath'],
+          '--backend',device,'--offload-to-cpu','--diffusion-fa','--vae-tiling',
+          '--sampling-method','euler','--steps',str(job['steps']),'--cfg-scale',str(1+p['guidance'] if p['backend']=='krea-sdcpp' else p['guidance']),
+          '-W',str(((job['width']+15)//16)*16),'-H',str(((job['height']+15)//16)*16),
+          '--seed',str(job['seed']),'-p',job['prompt'],'-o',output]
+    if p['variant']=='turbo' and p['backend']=='qwen-sdcpp':
+        if job['steps']!=8 or p['guidance']!=1:raise ValueError('Qwen Turbo requires its fixed 8-step CFG 1 schedule.')
+        args+=['--sigmas',QWEN_TURBO_SIGMAS]
+    if p['backend']=='krea-sdcpp':args+=['--flow-shift','1.15']
+    if job['task']=='edit':
+        args+=['--llm_vision',p['projectorPath']]
+        for image in job['inputs']:args+=['-r',image]
+    return args,output
+
+def sdcpp(job):
+    from PIL import Image
+    args,output=sdcpp_args(job,sdcpp_device(job))
+    subprocess.run(args,check=True,cwd=job['directory'])
+    with Image.open(output) as image:finish(image.copy(),job)
 
 def comfy(job):
     from PIL import Image
@@ -62,10 +102,10 @@ def comfy(job):
           '4':{'class_type':'CLIPTextEncode','inputs':{'text':job['prompt'],'clip':['2',0]}},
           '5':{'class_type':'CLIPTextEncode','inputs':{'text':'','clip':['2',0]}},
           '6':{'class_type':'EmptySD3LatentImage','inputs':{'width':((job['width']+15)//16)*16,'height':((job['height']+15)//16)*16,'batch_size':1}},
-          '7':{'class_type':'KSampler','inputs':{'model':['1',0],'positive':['4',0],'negative':['5',0],'latent_image':['6',0],'seed':job['seed'],'steps':job['steps'],'cfg':profile['guidance'],'sampler_name':'euler','scheduler':'simple','denoise':1.0}},
+          '7':{'class_type':'KSampler','inputs':{'model':['1',0],'positive':['4',0],'negative':['5',0],'latent_image':['6',0],'seed':job['seed'],'steps':job['steps'],'cfg':1+profile['guidance'],'sampler_name':'euler','scheduler':'simple','denoise':1.0}},
           '8':{'class_type':'VAEDecode','inputs':{'samples':['7',0],'vae':['3',0]}},
           '9':{'class_type':'SaveImage','inputs':{'images':['8',0],'filename_prefix':'image'}}}
-        if profile['guidance']<=1:graph['5']={'class_type':'ConditioningZeroOut','inputs':{'conditioning':['4',0]}}
+        if profile['guidance']==0:graph['5']={'class_type':'ConditioningZeroOut','inputs':{'conditioning':['4',0]}}
         response=api('/prompt',{'prompt':graph,'client_id':job['id']})
         if response.get('node_errors') or not response.get('prompt_id'):raise RuntimeError('ComfyUI rejected the image workflow: '+json.dumps(response))
         prompt_id=response['prompt_id'];deadline=time.monotonic()+job['timeoutMs']/1000
@@ -97,5 +137,6 @@ if __name__=='__main__':
         except torch.OutOfMemoryError:
             print('DSH_IMAGE_RETRY_LOW_MEMORY',flush=True)
             raise SystemExit(75)
+    elif job['profile']['backend'] in ('qwen-sdcpp','krea-sdcpp'):sdcpp(job)
     elif job['profile']['backend']=='comfy-krea':comfy(job)
     else:raise ValueError('Unsupported image backend')

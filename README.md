@@ -1,47 +1,78 @@
 # DSH Image Tools
 
-A standalone Cordis plugin for DeepSeek Harness 0.2.1-rc.2. Local photographs and multi-image editing through Qwen Image 2.1, artistic generation through Krea 2, and cooperative GPU handoff through [DSH Model Scheduler](https://github.com/averyjohnkucan-arch/dsh-model-scheduler).
+A standalone Cordis plugin for DeepSeek Harness 0.2.1-rc.2. Qwen Image 2.1 provides photographs and multi-image editing; Krea 2 provides artistic generation. No Harness core patch is needed.
 
-Paste `https://github.com/averyjohnkucan-arch/dsh-image-tools` into Harness **Plugins → Add plugin**. Enable it, open **Settings → Image Tools**, and configure your downloaded model files. Install or update Model Scheduler too; image rendering requires its `runExclusive` API (0.1.1+). No Harness core patch is used.
+Paste `https://github.com/averyjohnkucan-arch/dsh-image-tools` into **Plugins → Add plugin**, enable it, and open **Settings → Image Tools**. The plugin contains adapters and an isolated runtime installer, not model weights. Point it at models you have downloaded.
 
-## One entry in Tool Manager
+## Import and configure
 
-Only `image_tools` is registered. Your existing Tool Manager decides whether it is hidden behind discovery or always available. The plugin does not override that choice or add global prompt instructions. Select it once, or mark that one entry basic/always available. Calling `image_tools(action="menu")` returns three choices:
+Click **Import model**. Choose a complete Qwen Diffusers folder, or select the denoiser, text encoder, VAE and optional vision projector together. Selections persist as you browse between folders. The importer reads bounded file headers and model metadata, assigns recognized components, and opens the result for review. It does not move or copy weights. Unknown families, uncertain Turbo variants and ambiguous components require a manual choice. Import one checkpoint at a time. A Safetensors shard index can identify its component's shards; individual unrelated checkpoints are never silently combined.
 
-- **Image Edit** — edit or combine 1–10 conversation attachments with Qwen Image 2.1. Describe each input in order. Originals are read-only; a new PNG is created.
-- **Generate Photograph** — Qwen image generation for photorealistic work.
-- **Generate Art** — Krea generation for artistic and stylized work.
+Profiles can be edited, enabled, disabled or removed. GGUF quantizations and compatible FP16/BF16 Safetensors files retain their actual precision. The plugin does not turn a file into another tensor type by renaming it. Krea INT8 ConvRot profiles use the ComfyUI CUDA backend; portable CPU/Vulkan profiles use upstream-compatible GGUF/BF16 weights. Not every engine accepts every tensor layout.
 
-The same menu tool executes the selected action; it does not permanently add three separate tool schemas. Output includes a real DSH image attachment and a workspace-relative path. The model is told to display the finished image inline.
+Qwen's complete Diffusers directory includes its model index, tokenizer, transformer, text encoder and VAE. The portable adapter accepts compatible GGUF/Safetensors components or shard-index JSONs. Editing also needs the matching vision projector. Qwen Diffusers text-encoder naming is not always accepted by the native loader; use a compatible native encoder rather than assuming every Diffusers shard index is interchangeable.
 
-## Models and runtime
+Settings, model paths and private runtimes live under `~/.dsh/dsh-image-tools/` (or the host's `DSH_HOME`). They are excluded from GitHub. On another machine, install the plugin/runtime and choose that machine's model paths.
 
-The plugin contains integration code, not model weights or a copy of the old Local AI installation. Model paths and machine-specific settings stay in `~/.dsh/dsh-image-tools/settings.json`, outside the repository. Choose existing compatible Python executables, or use **Install managed runtime** to download isolated Python, pinned CUDA PyTorch, Diffusers and ComfyUI into the plugin data directory. Setup needs Git, network access, sufficient disk space and an NVIDIA driver compatible with CUDA 13. It does not install system packages. The managed installer is provided; a complete fresh download has not been qualified on Windows.
+## One tool and explicit quality
 
-Qwen profiles use a complete local **QwenImage21Pipeline Diffusers directory**: `model_index.json`, tokenizer/processor, text encoder, transformer and VAE. Heretic variants use the same interface. A standalone Qwen GGUF is not accepted by this backend; use a full Diffusers model folder. The plugin checks the model index before releasing a chat model.
+Only `image_tools` is registered. Your existing Tool Manager controls discovery or always-available exposure. Calling `image_tools(action="menu")` describes three operations: `generate_photograph`, `edit_image` and `generate_art`. Editing accepts 1–10 conversation attachments in selected order and preserves originals. Results are real DSH image attachments plus workspace-relative PNG paths.
 
-Krea profiles use **ComfyUI-compatible `.safetensors` diffusion weights**, a compatible Qwen3-VL-4B text encoder, and the Qwen Image VAE. These can be in separate folders. BF16 and supported ComfyUI INT8 ConvRot files are accepted by the upstream loader. Krea Turbo is the recommended inference profile; Raw is a base/training checkpoint and is not described as an equivalent quality upgrade. Selecting a Heretic encoder does not turn the diffusion weights into a separately verified “uncensored” release. Krea editing is not implemented; use Qwen for reference-image edits.
+**Turbo is the default** for each task:
 
-Models stay where you downloaded them. Rendering is offline and each job runs in a private process. The ComfyUI adapter starts its own temporary loopback server with custom nodes and partner APIs disabled, uses its public `/prompt` and `/history` APIs, and shuts it down afterwards. It never attaches to an arbitrary running ComfyUI server.
+- `quality="fast_normal_quality"` selects the actual Turbo checkpoint.
+- `quality="slow_high_quality"` selects the separately configured non-Turbo checkpoint. It takes longer and may improve detail; Krea Raw is a base checkpoint and is not guaranteed to beat Turbo.
+- Omit `quality`, or use `default`, to follow the saved per-task default. The menu reports its concrete checkpoint and name. Defaults remain configurable.
 
-## Quality and dimensions
+These choices select different weights, not fewer steps on the same checkpoint. A missing requested variant produces an actionable error. There is no silent substitution. Sampling is stored per profile; models cannot override steps in a tool call.
 
-Fast is recommended for ordinary requests; high uses the profile’s higher-quality step preset. Defaults for a new Qwen profile are 20/40 steps. Krea Turbo uses its recommended 8 steps for both presets; more steps are not assumed to improve a distilled model. Step counts remain configurable.
+New profile presets follow the published model interfaces:
 
-Default output is **512×512**. Square presets: 256×256, 512×512, 1024×1024. HD presets: 1280×720, 1920×1080, 3840×2160, with portrait versions of each. These larger presets require `confirm_large=true`, reserved for explicit user requests. Custom `width` and `height` are supported from 64 through 4096 pixels, at most 16 megapixels. Backends run at their required aligned dimensions and the final PNG is fitted to the exact requested size. Large sizes take more time and memory and are not guaranteed to fit every GPU.
+| Checkpoint | Steps | Guidance |
+| --- | ---: | ---: |
+| Qwen Image 2.1 Turbo | 8 | 1, fixed published sigma schedule |
+| Qwen Image 2.1 regular | 40 | 1 |
+| Krea 2 Turbo | 8 | 0 native scale |
+| Krea 2 Raw | 52 | 3.5 native scale |
 
-Fast editing limits reference-image preprocessing resolution to reduce memory use. If Qwen exhausts VRAM, the worker exits completely and retries once in a fresh process using sequential CPU offload. A failed job does not publish a successful image result.
+Krea uses shift 1.15; adapters translate its native guidance scale into the renderer's CFG scale. Heretic encoders can be selected independently, but their names do not guarantee a particular image outcome.
 
-## GPU handoff
+References: [Qwen Turbo](https://huggingface.co/AtomicChat/Qwen-Image-2.1-Turbo-GGUF), [Qwen regular](https://huggingface.co/Qwen/Qwen-Image-2.1), [Krea Turbo](https://huggingface.co/krea/Krea-2-Turbo), [Krea Raw](https://huggingface.co/krea/Krea-2-Raw), [native Krea support](https://github.com/leejet/stable-diffusion.cpp/blob/master/docs/krea2.md).
 
-The scheduler waits for an active chat response and its KV checkpoint to finish, unloads the managed chat model immediately for the image job, and restores the prior model afterwards when no other chat has taken priority. This bypasses the ordinary idle grace period for this explicit handoff. Strata can restore its saved native KV; NInfer DFlash2 must rebuild KV after unloading.
+## Image sizes
 
-GPU compute processes still present after managed unloading are reported as a conflict. External applications are never killed. Without a cooperative lifecycle driver, a third-party model cannot safely be unloaded by guessing its PID. The scheduler’s Models card shows detected GPU compute processes read-only.
+The tool advertises `Square256`, `Square512` (default) and `Square1024`. Widescreen presets follow this plugin's requested naming:
 
-Job files, logs and model cache can contain private prompts and images. They are kept under private plugin/workspace directories and are not published to GitHub. Cancellation and plugin disposal stop the owned renderer process tree before scheduler release.
+| Preset | Landscape pixels | Portrait pixels |
+| --- | --- | --- |
+| SD / 480p | 854 × 480 | 480 × 854 |
+| HD / 720p | 1280 × 720 | 720 × 1280 |
+| 2K / 1080p | 1920 × 1080 | 1080 × 1920 |
+| 4K / 2160p | 3840 × 2160 | 2160 × 3840 |
 
-## Development and verification
+Use `orientation="portrait"` or `landscape`. HD, 2K and 4K need `confirm_large=true`, reserved for explicit user requests. Custom `width` and `height` are supported, each 64–4096 pixels, up to 16 megapixels. Runtimes use their required aligned dimensions and fit the final PNG to the exact requested dimensions. Large outputs need more time and memory and are not guaranteed to fit every device.
 
-`node --test test/*.test.js` checks size guards, quality defaults, profile validation and attachment selection. `node --check index.js` and `node --check client.js` validate the entry points. Live qualification details and limitations are recorded in [QUALIFICATION.md](QUALIFICATION.md); Linux qualification does not establish Windows runtime support.
+## CPU, iGPU and dedicated GPU
 
-Third-party runtimes retain their own licenses. ComfyUI is downloaded from Comfy-Org at `8f04fd6ecf4a548937971e840af2a985529fab76`; Diffusers from Hugging Face at `578c9b2c6636ab2424a0e56186268b83623656b2`. Their source is not copied into this plugin repository. Model licenses remain the model distributor’s responsibility.
+**Install portable CPU/Vulkan runtime** downloads private Python, Pillow and a checksum-pinned official stable-diffusion.cpp build. It does not need PyTorch or ComfyUI. The packaged targets are Linux x86-64 (Ubuntu 24 baseline) and Windows x86-64; compatible system Vulkan drivers are required for GPU use. Unsupported platforms report an error. NPU execution is not provided.
+
+**Install full CUDA/ComfyUI runtime** additionally prepares pinned CUDA PyTorch, Diffusers and private ComfyUI. It needs Git and a suitable NVIDIA driver. Existing compatible runtime paths may also be selected. Installers use versioned directories and never overwrite a running renderer's executable or shared libraries.
+
+Choose a saved execution default or per-call `execution`:
+
+- `gpu`: request cooperative unload → render → reload through [DSH Model Scheduler 0.1.1+](https://github.com/averyjohnkucan-arch/dsh-model-scheduler).
+- `igpu`: use a detected integrated Vulkan GPU and keep the chat model loaded.
+- `cpu`: keep chat loaded and render on CPU.
+- `auto`: use iGPU, or CPU if unavailable, up to the configurable pixel threshold; use dedicated GPU handoff above it.
+
+CPU/iGPU jobs are serialized locally and do not require the scheduler. A CUDA-only profile needs a configured compatible portable equivalent for CPU/iGPU or AMD/Intel execution. The equivalent must match the task and actual Turbo/non-Turbo variant. Device selection is shown in the receipt; unavailable devices fail explicitly. CPU/iGPU can be much slower. Shared-memory pressure can still affect other work.
+
+The scheduler waits for active chat completion and its KV checkpoint, releases a managed model for rendering, and restores it unless another chat takes priority. Strata can restore native disk KV; NInfer DFlash2 must prefill after unloading. GPU handoff requires cooperative registered drivers. Arbitrary third-party processes are never killed. NVIDIA compute-process conflicts and minimum VRAM are checked after managed unloading; AMD/Intel Vulkan memory allocation remains the renderer's responsibility.
+
+## Lifecycle and portability
+
+The integration uses Cordis-owned tool/service registration, the public settings slot, authenticated owner routes, DSH attachment storage and the scheduler's published `runExclusive` service. No browser DOM patching, private Harness state access or core source changes are used. Rendering runs in owned process trees; cancellation/disposal waits for their termination before scheduler release. The ComfyUI adapter owns a temporary loopback server with custom nodes and partner APIs disabled. It does not attach to someone else's server.
+
+Rendering is offline. Runtime installation requires network access. Prompts, generated PNGs and job logs remain in private plugin/workspace directories. Qwen CUDA out-of-memory handling terminates the failed worker and retries once with sequential CPU offload. Failed jobs do not publish a successful attachment.
+
+Run `pnpm test`, `pnpm run test:native` and `pnpm run check`. See [QUALIFICATION.md](QUALIFICATION.md) for actual hardware tests and limits. Third-party runtime and model licenses remain in force; their source and model files are not redistributed here.
