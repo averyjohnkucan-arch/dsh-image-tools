@@ -49,8 +49,9 @@ The tool advertises `Square256`, `Square512` (default) and `Square1024`. Widescr
 | HD / 720p | 1280 × 720 | 720 × 1280 |
 | 2K / 1080p | 1920 × 1080 | 1080 × 1920 |
 | 4K / 2160p | 3840 × 2160 | 2160 × 3840 |
+| 8K / 4320p | 7680 × 4320 | 4320 × 7680 |
 
-Use `orientation="portrait"` or `landscape`. HD, 2K and 4K need `confirm_large=true`, reserved for explicit user requests. Custom `width` and `height` are supported, each 64–4096 pixels, up to 16 megapixels. Runtimes use their required aligned dimensions and fit the final PNG to the exact requested dimensions. Large outputs need more time and memory and are not guaranteed to fit every device.
+Use `orientation="portrait"` or `landscape`. HD, 2K, 4K and 8K need `confirm_large=true`, reserved for explicit user requests. Custom `width` and `height` are supported, each 64–8192 pixels, up to 33,554,432 pixels. Runtimes use their required aligned dimensions and fit the final PNG to the exact requested dimensions. Large outputs need more time and memory and are not guaranteed to fit every device.
 
 ## CPU, iGPU and dedicated GPU
 

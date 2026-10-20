@@ -30,6 +30,8 @@ Earlier integration qualification remains valid for the scheduler/attachment int
 - Generated PNG data passed through the actual DSH local attachment store.
 - The current installation uses the local plugin source, existing Tool Manager policy and public Image Tools settings slot.
 
-Not hardware-qualified: Windows, AMD GPUs, every quantization/tensor layout, HD/4K memory fit, and the CUDA out-of-memory retry. AMD routing is covered by tests but not a physical AMD render. The full fresh CUDA dependency download has not been qualified on Windows. Compatible Vulkan drivers remain a system requirement. Krea Raw is not guaranteed to improve on Turbo. NPU is not implemented.
+Not hardware-qualified: Windows, AMD GPUs, every quantization/tensor layout, HD/4K/8K memory fit, and the CUDA out-of-memory retry. AMD routing is covered by tests but not a physical AMD render. The full fresh CUDA dependency download has not been qualified on Windows. Compatible Vulkan drivers remain a system requirement. Krea Raw is not guaranteed to improve on Turbo. NPU is not implemented.
 
 Only cooperative registered model drivers can be unloaded/restored. Arbitrary third-party processes remain untouched. NInfer DFlash2 cannot persist disk KV across shutdown. Knowledge's opportunistic GPU processing is a separate integration and is not established by these image tests.
+
+Version 0.2.1 adds the explicit 8K preset (7680×4320, portrait 4320×7680). Request validation/orientation/opt-in tests pass; an 8K render has not been hardware-qualified.

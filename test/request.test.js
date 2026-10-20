@@ -9,8 +9,16 @@ test('all size presets retain exact requested output pixels; large sizes require
 test('settings reject duplicate profiles, relative paths and unsupported Krea editing',()=>{const cfg=config();validate(cfg);cfg.profiles.push({...cfg.profiles[0]});assert.throws(()=>validate(cfg),/duplicate/);const b=config();b.profiles[2].tasks.push('edit');assert.throws(()=>validate(b),/text-to-image/);});
 test('image editing follows attachment order and never accepts arbitrary filesystem paths',()=>{const a={attachmentId:'sha256:'+'a'.repeat(64),mediaType:'image/png'},b={attachmentId:'sha256:'+'b'.repeat(64),mediaType:'image/png'};const events=[{type:'user/message',data:{content:[{type:'image',attachment:a},{type:'image',attachment:b}]}}];assert.deepEqual(selectImages(events),[a,b]);assert.deepEqual(selectImages(events,['b'.repeat(64),'a'.repeat(64)]),[b,a]);assert.throws(()=>selectImages(events,['/etc/passwd']),/complete attachment IDs/);assert.throws(()=>selectImages([]),/Attach between/);});
 test('named resolutions and portrait orientation resolve to exact pixels',()=>{
- for(const [size,w,h] of [['SD',854,480],['HD',1280,720],['2K',1920,1080],['4K',3840,2160],['Square256',256,256],['Square512',512,512],['Square1024',1024,1024]]){
+ for(const [size,w,h] of [['SD',854,480],['HD',1280,720],['2K',1920,1080],['4K',3840,2160],['8K',7680,4320],['Square256',256,256],['Square512',512,512],['Square1024',1024,1024]]){
   const r=request({action:'generate_art',prompt:'test',size,orientation:'portrait',confirm_large:true},config());assert.equal(r.width,Math.min(w,h));assert.equal(r.height,Math.max(w,h));
  }
  assert.throws(()=>request({action:'generate_art',prompt:'test',orientation:'sideways'},config()),/Orientation/);
+});
+
+test('8K requires explicit opt-in and rejects oversized custom images',()=>{
+ const args={action:'generate_art',prompt:'A landscape',size:'8K'};
+ assert.throws(()=>request(args,config()),/explicitly requested/);
+ const landscape=request({...args,confirm_large:true},config());assert.deepEqual([landscape.width,landscape.height],[7680,4320]);
+ const portrait=request({...args,orientation:'portrait',confirm_large:true},config());assert.deepEqual([portrait.width,portrait.height],[4320,7680]);
+ assert.throws(()=>request({action:'generate_art',prompt:'test',width:8192,height:8192,confirm_large:true},config()),/33,554,432/);
 });
