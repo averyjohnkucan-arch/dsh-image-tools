@@ -42,6 +42,6 @@ Job files, logs and model cache can contain private prompts and images. They are
 
 ## Development and verification
 
-`node --test test/*.test.js` checks size guards, quality defaults, profile validation and attachment selection. `node --check index.js` and `node --check client.js` validate the entry points. Live qualification details and limitations are recorded separately; Linux qualification does not establish Windows runtime support.
+`node --test test/*.test.js` checks size guards, quality defaults, profile validation and attachment selection. `node --check index.js` and `node --check client.js` validate the entry points. Live qualification details and limitations are recorded in [QUALIFICATION.md](QUALIFICATION.md); Linux qualification does not establish Windows runtime support.
 
 Third-party runtimes retain their own licenses. ComfyUI is downloaded from Comfy-Org at `8f04fd6ecf4a548937971e840af2a985529fab76`; Diffusers from Hugging Face at `578c9b2c6636ab2424a0e56186268b83623656b2`. Their source is not copied into this plugin repository. Model licenses remain the model distributor’s responsibility.

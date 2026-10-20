@@ -27,7 +27,8 @@
     "icon.svg",
     "cordis.patch.yml",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "QUALIFICATION.md"
   ],
   "scripts": {
     "test": "node --test test/*.test.js",
