@@ -22,3 +22,10 @@ test('8K requires explicit opt-in and rejects oversized custom images',()=>{
  const portrait=request({...args,orientation:'portrait',confirm_large:true},config());assert.deepEqual([portrait.width,portrait.height],[4320,7680]);
  assert.throws(()=>request({action:'generate_art',prompt:'test',width:8192,height:8192,confirm_large:true},config()),/33,554,432/);
 });
+
+test('native memory settings migrate safely and reject invalid budgets or placements',()=>{
+ const original=config(),legacy=validate(original);assert.equal(legacy.profiles[0].nativeWeights,'offload');assert.equal(legacy.profiles[0].nativeVramGiB,0);
+ const edited=config();edited.profiles[0].nativeWeights='diffusion';edited.profiles[0].nativeVramGiB=22.695;const result=validate(edited);assert.equal(result.profiles[0].steps,8);assert.equal(result.profiles[0].guidance,1);assert.equal(result.profiles[0].nativeWeights,'diffusion');
+ for(const bad of [-1,Infinity,NaN,'23']){edited.profiles[0].nativeVramGiB=bad;assert.throws(()=>validate(edited),/memory policy/);}
+ edited.profiles[0].nativeVramGiB=0;edited.profiles[0].nativeWeights='arbitrary';assert.throws(()=>validate(edited),/memory policy/);
+});

@@ -66,6 +66,10 @@ Choose a saved execution default or per-call `execution`:
 - `cpu`: keep chat loaded and render on CPU.
 - `auto`: use iGPU, or CPU if unavailable, up to the configurable pixel threshold; use dedicated GPU handoff above it.
 
+Each native profile exposes **Native weight placement**: CPU storage with GPU execution (the existing behavior), diffusion weights resident on the selected device, all weights resident, or automatic placement. **Native device memory budget** is an optional GiB ceiling (0 uses the engine default); it does not force allocations to fill VRAM. Leave room for image working memory. **Force tiled VAE decoding** can be disabled to let the engine decode normally and use its memory fallback when needed. These controls preserve the checkpoint, sampler, guidance and number of denoising steps. Larger images still require substantially more working memory.
+
+The optional Linux **performance power profile hold** applies only during native dedicated-GPU rendering through `powerprofilesctl launch`. It ends when the renderer exits and does not change your saved power profile. CPU/iGPU rendering and non-Linux hosts do not use this hold.
+
 CPU/iGPU jobs are serialized locally and do not require the scheduler. A CUDA-only profile needs a configured compatible portable equivalent for CPU/iGPU or AMD/Intel execution. The equivalent must match the task and actual Turbo/non-Turbo variant. Device selection is shown in the receipt; unavailable devices fail explicitly. CPU/iGPU can be much slower. Shared-memory pressure can still affect other work.
 
 The scheduler waits for active chat completion and its KV checkpoint, releases a managed model for rendering, and restores it unless another chat takes priority. Strata can restore native disk KV; NInfer DFlash2 must prefill after unloading. GPU handoff requires cooperative registered drivers. Arbitrary third-party processes are never killed. NVIDIA compute-process conflicts and minimum VRAM are checked after managed unloading; AMD/Intel Vulkan memory allocation remains the renderer's responsibility.

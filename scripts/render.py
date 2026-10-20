@@ -1,5 +1,5 @@
 """Private one-job renderer. Model files are read-only; no old Local AI imports."""
-import json,os,pathlib,socket,subprocess,sys,threading,time,urllib.request
+import json,os,pathlib,shutil,socket,subprocess,sys,threading,time,urllib.request
 
 def finish(image,job):
     from PIL import Image,ImageOps
@@ -50,10 +50,18 @@ def sdcpp_device(job):
 def sdcpp_args(job,device):
     p=job['profile'];output=str(pathlib.Path(job['directory'])/'native.png')
     args=[job['sdExecutable'],'--diffusion-model',p['modelPath'],'--llm',p['textEncoderPath'],'--vae',p['vaePath'],
-          '--backend',device,'--offload-to-cpu','--diffusion-fa','--vae-tiling',
+          '--backend',device,'--diffusion-fa',
           '--sampling-method','euler','--steps',str(job['steps']),'--cfg-scale',str(1+p['guidance'] if p['backend']=='krea-sdcpp' else p['guidance']),
           '-W',str(((job['width']+15)//16)*16),'-H',str(((job['height']+15)//16)*16),
           '--seed',str(job['seed']),'-p',job['prompt'],'-o',output]
+    if p.get('nativeVaeTiling',True):args+=['--vae-tiling']
+    placement=p.get('nativeWeights','offload')
+    if placement=='offload':args+=['--offload-to-cpu']
+    elif placement=='diffusion':args+=['--params-backend',f'diffusion={device},te=cpu,vae=cpu']
+    elif placement=='resident':args+=['--auto-fit','off']
+    elif placement!='auto':raise ValueError('Invalid native weight placement.')
+    budget=p.get('nativeVramGiB',0)
+    if budget and device.upper()!='CPU':args+=['--max-vram',f'{device}={budget}']
     if p['variant']=='turbo' and p['backend']=='qwen-sdcpp':
         if job['steps']!=8 or p['guidance']!=1:raise ValueError('Qwen Turbo requires its fixed 8-step CFG 1 schedule.')
         args+=['--sigmas',QWEN_TURBO_SIGMAS]
@@ -63,9 +71,17 @@ def sdcpp_args(job,device):
         for image in job['inputs']:args+=['-r',image]
     return args,output
 
+def native_command(job,args):
+    if job.get('performanceHold') and job.get('execution')=='gpu' and sys.platform.startswith('linux'):
+        power=shutil.which('powerprofilesctl')
+        if not power:raise RuntimeError('Performance hold requires powerprofilesctl. Disable it in Image Tools settings on this host.')
+        args=[power,'launch','--profile','performance','--reason','DSH image inference','--appid','dsh-image-tools',*args]
+    return args
+
 def sdcpp(job):
     from PIL import Image
     args,output=sdcpp_args(job,sdcpp_device(job))
+    args=native_command(job,args)
     subprocess.run(args,check=True,cwd=job['directory'])
     with Image.open(output) as image:finish(image.copy(),job)
 
