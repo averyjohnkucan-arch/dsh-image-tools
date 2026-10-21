@@ -85,3 +85,5 @@ Run `pnpm test`, `pnpm run test:native` and `pnpm run check`. See [QUALIFICATION
 ## Generated image previews
 
 The collapsed row uses DSH’s public DisclosureRow primitive and turn-bound disclosure hook, matching the normal Tool call row. Expand the Image Tools call in the conversation to see its saved output image, even if the assistant does not include it in the answer. Click the preview to open it at full size. The plugin uses the public keyed tool-view slot and the session-authorized attachment loader; no Harness changes or extra image generation are required. Existing tool results containing image attachments also gain the preview. Raw metadata remains available under Tool output.
+
+Each generated image caption shows **Total time**, including waiting/admission, model loading and rendering, chat restoration, and attachment saving. New results persist a timing breakdown. Older saved calls use their recorded tool-call/result timestamps when available; this is total tool elapsed time, not just denoising speed.

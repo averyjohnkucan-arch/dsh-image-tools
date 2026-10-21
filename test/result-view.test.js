@@ -40,3 +40,12 @@ test('closed image call uses the native disclosure and lazily mounts output',asy
  assert.ok(nodes(tree).some(x=>x.type==='DisclosureRow'&&x.props.open===false&&x.props.title==='Tool call'));
  assert.equal(nodes(tree).filter(x=>typeof x.type==='function').length,0);
 });
+
+test('image caption shows persisted total elapsed time, or historical call duration',async()=>{
+ for(const [data,block,expected] of [['{"timing":{"totalMs":72300}}',{},'Total time: 1m 12.3s'],['{}',{callTime:1000,time:35500},'Total time: 34.5s']]){
+  const f=await fixture(),view=f.entries.find(x=>x.entry.key==='image_tools').component;
+  const tree=f.render(view,{phase:'result',block:{...block,content:[{type:'text',text:data},{type:'image',attachment:image}]},loadImage:async()=> 'blob:preview'});
+  const figure=nodes(tree).find(x=>typeof x.type==='function');
+  assert.ok(JSON.stringify(f.render(figure.type,figure.props)).includes(expected));
+ }
+});

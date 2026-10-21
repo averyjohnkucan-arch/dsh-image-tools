@@ -16,6 +16,6 @@ test('CPU renders serialize locally without requesting NVIDIA unloading or sched
   await new Promise(resolve=>setTimeout(resolve,5));const png=Buffer.alloc(24);Buffer.from([137,80,78,71,13,10,26,10]).copy(png);await writeFile(spec.output,png);active--;
  };
  const results=await Promise.all([1,2].map(()=>runtime.render({action:'generate_photograph',prompt:'a mug',execution:'cpu'},{workspace:root})));
- assert.equal(peak,1);assert.ok(results.every(r=>r.execution==='cpu'&&r.restoration==='not-needed'));
+ assert.equal(peak,1);assert.ok(results.every(r=>r.execution==='cpu'&&r.restoration==='not-needed'));for(const r of results){assert.ok(r.timing.totalMs>=r.timing.renderMs);assert.ok(r.timing.renderMs>=4);assert.ok(r.timing.queueAndHandoffMs>=0);assert.ok(r.timing.restoreAndSaveMs>=0);}
  await runtime.dispose();
 });
