@@ -63,6 +63,21 @@ class NativeArguments(unittest.TestCase):
         with patch.object(renderer.sys,'platform','win32'):
             self.assertEqual(renderer.native_command(dict(performanceHold=True,execution='gpu'),args),args)
 
+    def test_renderer_prompt_flags_cannot_override_the_power_profile(self):
+        # powerprofilesctl recognizes -p itself unless the child command is after --.
+        import argparse
+        args=['/runtime/sd-cli','-p','a chicken','-r','reference.png','--steps','8']
+        with patch.object(renderer.sys,'platform','linux'),patch.object(renderer.shutil,'which',return_value='/usr/bin/powerprofilesctl'):
+            command=renderer.native_command(dict(performanceHold=True,execution='gpu'),args)
+        parser=argparse.ArgumentParser()
+        parser.add_argument('launch');parser.add_argument('--profile','-p')
+        parser.add_argument('--reason','-r');parser.add_argument('--appid','-i')
+        parser.add_argument('arguments',nargs='*')
+        parsed,unknown=parser.parse_known_args(command[1:])
+        self.assertEqual(parsed.profile,'performance')
+        self.assertEqual(parsed.arguments,args)
+        self.assertEqual(unknown,[])
+
     def test_unavailable_requested_performance_hold_fails_clearly(self):
         with patch.object(renderer.sys,'platform','linux'),patch.object(renderer.shutil,'which',return_value=None):
             with self.assertRaisesRegex(RuntimeError,'powerprofilesctl'):

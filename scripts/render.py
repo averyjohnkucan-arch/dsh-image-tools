@@ -75,7 +75,7 @@ def native_command(job,args):
     if job.get('performanceHold') and job.get('execution')=='gpu' and sys.platform.startswith('linux'):
         power=shutil.which('powerprofilesctl')
         if not power:raise RuntimeError('Performance hold requires powerprofilesctl. Disable it in Image Tools settings on this host.')
-        args=[power,'launch','--profile','performance','--reason','DSH image inference','--appid','dsh-image-tools',*args]
+        args=[power,'launch','--profile','performance','--reason','DSH image inference','--appid','dsh-image-tools','--',*args]
     return args
 
 def sdcpp(job):
