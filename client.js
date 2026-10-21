@@ -14,7 +14,7 @@ window.__ModuleLoader__.load({id:'dsh-image-tools',factory(require){
   },[attachment.attachmentId,loadImage]);
   return h('figure',{style:{margin:'12px 0'}},state.url?h('a',{href:state.url,target:'_blank',rel:'noopener noreferrer','aria-label':'Open generated image'},h('img',{src:state.url,alt:attachment.name||'Generated image',width:attachment.width,height:attachment.height,style:{display:'block',maxWidth:'100%',width:'auto',height:'auto',maxHeight:'70vh',borderRadius:8}})):h('p',{role:state.error?'alert':'status'},state.error||'Loading generated image…'),h('figcaption',{style:{fontSize:12,opacity:.7,marginTop:6}},(attachment.name||'Generated image')+' · '+attachment.width+' × '+attachment.height));
  }
- function ImageToolResult({phase,block,loadImage,inspect}){
+ function ImageToolResult({phase,block,loadImage}){
   const settled=phase==='result',content=settled&&Array.isArray(block.content)?block.content:[];
   const images=content.filter(p=>p?.type==='image'&&p.attachment&&typeof p.attachment.attachmentId==='string').map(p=>p.attachment);
   const text=content.filter(p=>p?.type==='text'&&typeof p.text==='string').map(p=>p.text).join('\n');
@@ -23,8 +23,7 @@ window.__ModuleLoader__.load({id:'dsh-image-tools',factory(require){
   return h('details',{className:'dit',style:{margin:'8px 0',fontSize:'inherit'}},h('summary',{style:{cursor:'pointer',color:'var(--dsw-alias-label-secondary)'}},title+' — '+(settled?(block.isError?'Failed':images.length?images.length+' image'+(images.length===1?'':'s')+' ready':'Completed'):'Running…')),
    h('div',{style:{padding:'8px 0 8px 16px'}},...images.map(attachment=>h(ResultImage,{key:attachment.attachmentId,attachment,loadImage})),
     !settled&&h('p',{role:'status'},'Waiting for the image tool to finish…'),
-    text&&h('details',{open:images.length===0},h('summary',null,block.isError?'Error details':'Tool output'),h('pre',{style:{whiteSpace:'pre-wrap',overflowWrap:'anywhere',maxHeight:320,overflow:'auto'}},text)),
-    inspect&&h('button',{type:'button',onClick:inspect},'Inspect tool call')));
+    text&&h('details',{open:images.length===0},h('summary',null,block.isError?'Error details':'Tool output'),h('pre',{style:{whiteSpace:'pre-wrap',overflowWrap:'anywhere',maxHeight:320,overflow:'auto'}},text))));
  }
  function Page(){const[data,setData]=useState(null),[draft,setDraft]=useState(null),[selected,setSelected]=useState(0),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[browser,setBrowser]=useState(null),[target,setTarget]=useState('modelPath'),[importPaths,setImportPaths]=useState([]),[location,setLocation]=useState('');
   useEffect(()=>{let alive=true;const refresh=()=>api('list').then(d=>{if(alive){setData(d);setDraft(prior=>prior||structuredClone(d.settings));}}).catch(e=>{if(alive)setError(e.message);});refresh();const timer=setInterval(refresh,2000);return()=>{alive=false;clearInterval(timer);};},[]);
