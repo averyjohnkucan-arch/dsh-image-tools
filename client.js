@@ -3,6 +3,29 @@ window.__ModuleLoader__.load({id:'dsh-image-tools',factory(require){
  const css=`.dit{font:inherit;color:var(--dsw-alias-label-primary);font-size:14px}.dit h2{font-size:18px;font-weight:500;margin:0 0 12px}.dit h3{font-size:15px;font-weight:500}.dit p{color:var(--dsw-alias-label-secondary);line-height:1.55}.dit button,.dit input,.dit select{font:inherit;color:inherit;border:1px solid var(--dsw-alias-border-l3);border-radius:8px;background:var(--dsw-alias-bg-layer-1);padding:7px 10px;min-width:0}.dit button{cursor:pointer}.dit button:hover{background:var(--dsw-alias-interactive-bg-hover)}.dit button:disabled{opacity:.5;cursor:default}.dit :focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:2px}.dit-card{border:1px solid var(--dsw-alias-settings-card-stroke);border-radius:12px;background:var(--dsw-alias-settings-card-fill);padding:16px;margin:16px 0}.dit-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0}.dit-row>strong{flex:1}.dit-field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.dit-field>span{color:var(--dsw-alias-label-secondary);font-size:13px}.dit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.dit-path{display:flex;gap:8px}.dit-path input{flex:1}.dit-list{max-height:260px;overflow:auto;display:flex;flex-direction:column;gap:5px}.dit-list button{text-align:left;overflow-wrap:anywhere}.dit-error{color:var(--dsw-alias-state-error-primary)!important;white-space:pre-wrap}.dit pre{max-height:200px;overflow:auto;white-space:pre-wrap;font-size:12px}.dit small{color:var(--dsw-alias-label-tertiary)}@media(max-width:650px){.dit-grid{grid-template-columns:1fr}}`;
  let connection=window.__DSH_IMAGE_TOOLS__;
  async function api(action,payload={}){if(!connection)connection=await fetch('/plugins/dsh-image-tools/connection').then(r=>r.json());let r=await fetch(connection.path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+connection.token},body:JSON.stringify({action,payload})});if(r.status===401){connection=await fetch('/plugins/dsh-image-tools/connection').then(r=>r.json());r=await fetch(connection.path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+connection.token},body:JSON.stringify({action,payload})});}const d=await r.json();if(!r.ok)throw Error(d.error||'Image Tools request failed.');return d.result;}
+ // Public tool.call.toolview receives durable result blocks and a session-authorized loader.
+ // Render the output for the user even when the assistant omits a Markdown image.
+ function ResultImage({attachment,loadImage}){
+  const [state,setState]=useState({url:loadImage?.peek?.(attachment)||'',error:''});
+  useEffect(()=>{let alive=true;setState({url:loadImage?.peek?.(attachment)||'',error:''});
+   Promise.resolve().then(()=>{if(typeof loadImage!=='function')throw Error('Image loading is unavailable in this client.');return loadImage(attachment);})
+    .then(url=>{if(alive)setState({url,error:''});},()=>{if(alive)setState({url:'',error:'Could not load this saved image. Reopen the tool result or refresh to retry.'});});
+   return()=>{alive=false;};
+  },[attachment.attachmentId,loadImage]);
+  return h('figure',{style:{margin:'12px 0'}},state.url?h('a',{href:state.url,target:'_blank',rel:'noopener noreferrer','aria-label':'Open generated image'},h('img',{src:state.url,alt:attachment.name||'Generated image',width:attachment.width,height:attachment.height,style:{display:'block',maxWidth:'100%',width:'auto',height:'auto',maxHeight:'70vh',borderRadius:8}})):h('p',{role:state.error?'alert':'status'},state.error||'Loading generated image…'),h('figcaption',{style:{fontSize:12,opacity:.7,marginTop:6}},(attachment.name||'Generated image')+' · '+attachment.width+' × '+attachment.height));
+ }
+ function ImageToolResult({phase,block,loadImage,inspect}){
+  const settled=phase==='result',content=settled&&Array.isArray(block.content)?block.content:[];
+  const images=content.filter(p=>p?.type==='image'&&p.attachment&&typeof p.attachment.attachmentId==='string').map(p=>p.attachment);
+  const text=content.filter(p=>p?.type==='text'&&typeof p.text==='string').map(p=>p.text).join('\n');
+  let args={};try{args=JSON.parse(block.call?.argsRaw||block.argsRaw||'{}');}catch{}
+  const title=({generate_photograph:'Generate photograph',generate_art:'Generate art',edit_image:'Edit image',menu:'Image Tools menu'})[args.action]||'Image Tools';
+  return h('details',{className:'dit',style:{margin:'8px 0',fontSize:'inherit'}},h('summary',{style:{cursor:'pointer',color:'var(--dsw-alias-label-secondary)'}},title+' — '+(settled?(block.isError?'Failed':images.length?images.length+' image'+(images.length===1?'':'s')+' ready':'Completed'):'Running…')),
+   h('div',{style:{padding:'8px 0 8px 16px'}},...images.map(attachment=>h(ResultImage,{key:attachment.attachmentId,attachment,loadImage})),
+    !settled&&h('p',{role:'status'},'Waiting for the image tool to finish…'),
+    text&&h('details',{open:images.length===0},h('summary',null,block.isError?'Error details':'Tool output'),h('pre',{style:{whiteSpace:'pre-wrap',overflowWrap:'anywhere',maxHeight:320,overflow:'auto'}},text)),
+    inspect&&h('button',{type:'button',onClick:inspect},'Inspect tool call')));
+ }
  function Page(){const[data,setData]=useState(null),[draft,setDraft]=useState(null),[selected,setSelected]=useState(0),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[browser,setBrowser]=useState(null),[target,setTarget]=useState('modelPath'),[importPaths,setImportPaths]=useState([]),[location,setLocation]=useState('');
   useEffect(()=>{let alive=true;const refresh=()=>api('list').then(d=>{if(alive){setData(d);setDraft(prior=>prior||structuredClone(d.settings));}}).catch(e=>{if(alive)setError(e.message);});refresh();const timer=setInterval(refresh,2000);return()=>{alive=false;clearInterval(timer);};},[]);
   async function act(action,payload){setBusy(true);setError('');try{const result=await api(action,payload);setData(await api('list'));return result;}catch(e){setError(e.message);throw e;}finally{setBusy(false);}}
@@ -25,5 +48,5 @@ window.__ModuleLoader__.load({id:'dsh-image-tools',factory(require){
    data?.jobs.slice(-5).map(job=>h('div',{className:'dit-card',key:job.id},h('strong',null,job.name),h('p',{role:'status'},job.status+': '+job.progress),['queued','running'].includes(job.status)&&h('button',{onClick:()=>{void act('cancel',{id:job.id}).catch(()=>{});}},'Cancel job'),job.log&&h('details',null,h('summary',null,'Runtime log'),h('pre',null,job.log))))
   ));
  }
- return {inject:['slots','locale'],apply(ctx){ctx.effect(()=>ctx.locale.register('dsh-image-tools',{'en':{}}));ctx.slots.inject('settings.section',()=>ctx.slots.register({name:'settings.section',id:'image-tools',order:66,label:()=> 'Image Tools'},Page));}};
+ return {inject:['slots','locale'],apply(ctx){ctx.slots.inject('tool.call.toolview',()=>ctx.slots.register({name:'tool.call.toolview',key:'image_tools'},ImageToolResult));ctx.effect(()=>ctx.locale.register('dsh-image-tools',{'en':{}}));ctx.slots.inject('settings.section',()=>ctx.slots.register({name:'settings.section',id:'image-tools',order:66,label:()=> 'Image Tools'},Page));}};
 }});

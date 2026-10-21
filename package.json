@@ -1,6 +1,6 @@
 {
   "name": "dsh-image-tools",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Local Qwen image editing and photography, Krea art, and cooperative GPU handoff for DeepSeek Harness.",
   "type": "module",
   "license": "MIT",
@@ -49,7 +49,8 @@
       "platform": "web",
       "immediately": true,
       "inject": [
-        "@deepseek-ai/dsh-client-ui-settings"
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-tool"
       ]
     }
   }

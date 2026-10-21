@@ -81,3 +81,7 @@ The integration uses Cordis-owned tool/service registration, the public settings
 Rendering is offline. Runtime installation requires network access. Prompts, generated PNGs and job logs remain in private plugin/workspace directories. Qwen CUDA out-of-memory handling terminates the failed worker and retries once with sequential CPU offload. Failed jobs do not publish a successful attachment.
 
 Run `pnpm test`, `pnpm run test:native` and `pnpm run check`. See [QUALIFICATION.md](QUALIFICATION.md) for actual hardware tests and limits. Third-party runtime and model licenses remain in force; their source and model files are not redistributed here.
+
+## Generated image previews
+
+Expand the Image Tools call in the conversation to see its saved output image, even if the assistant does not include it in the answer. Click the preview to open it at full size. The plugin uses the public keyed tool-view slot and the session-authorized attachment loader; no Harness changes or extra image generation are required. Existing tool results containing image attachments also gain the preview. Raw metadata remains available under Tool output.
