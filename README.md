@@ -16,13 +16,13 @@ Settings, model paths and private runtimes live under `~/.dsh/dsh-image-tools/` 
 
 ## One tool and explicit quality
 
-Only `image_tools` is registered. Your existing Tool Manager controls discovery or always-available exposure. Calling `image_tools(action="menu")` describes three operations: `generate_photograph`, `edit_image` and `generate_art`. Editing accepts 1–10 conversation attachments in selected order and preserves originals. Results are real DSH image attachments plus workspace-relative PNG paths.
+Enabling the plugin registers three ordinary tools: `create_image` for photographs, `create_image_art` for art and illustrations, and `edit_image` for editing or combining attached images. Call them directly with a prompt; no menu call or action parameter is needed. Without Tool Manager they appear in the model’s tool context immediately. Tool Manager independently controls discovery or always-available exposure for each tool. Configuration, runtime setup, job status and cancellation remain in Settings → Image Tools. Existing `image_tools` conversation results still render. Editing accepts 1–10 conversation attachments in selected order and preserves originals. Results are real DSH image attachments plus workspace-relative PNG paths.
 
 **Turbo is the default** for each task:
 
 - `quality="fast_normal_quality"` selects the actual Turbo checkpoint.
 - `quality="slow_high_quality"` selects the separately configured non-Turbo checkpoint. It takes longer and may improve detail; Krea Raw is a base checkpoint and is not guaranteed to beat Turbo.
-- Omit `quality`, or use `default`, to follow the saved per-task default. The menu reports its concrete checkpoint and name. Defaults remain configurable.
+- Omit `quality`, or use `default`, to follow the saved per-task default. Settings show its concrete checkpoint and name. Defaults remain configurable.
 
 These choices select different weights, not fewer steps on the same checkpoint. A missing requested variant produces an actionable error. There is no silent substitution. Sampling is stored per profile; models cannot override steps in a tool call.
 
@@ -87,3 +87,7 @@ Run `pnpm test`, `pnpm run test:native` and `pnpm run check`. See [QUALIFICATION
 The collapsed row uses DSH’s public DisclosureRow primitive and turn-bound disclosure hook, matching the normal Tool call row. Expand the Image Tools call in the conversation to see its saved output image, even if the assistant does not include it in the answer. Click the preview to open it at full size. The plugin uses the public keyed tool-view slot and the session-authorized attachment loader; no Harness changes or extra image generation are required. Existing tool results containing image attachments also gain the preview. Raw metadata remains available under Tool output.
 
 Each generated image caption shows **Total time**, including waiting/admission, model loading and rendering, chat restoration, and attachment saving. New results persist a timing breakdown. Older saved calls use their recorded tool-call/result timestamps when available; this is total tool elapsed time, not just denoising speed.
+
+While an image call runs, its native row shows the operation and reported sampling progress (for example `generate_art | 10%`) in the existing summary font. Progress is polled every two seconds for that call only. Model loading has no invented percentage; sampling can reach 100% before decoding and chat-model restoration finish. The progress endpoint returns only status and percentage, without prompts, model names or paths.
+
+Completed images also appear in a dedicated card at the bottom of their chat turn, outside the collapsed tool/process group. This uses the saved attachment and session-authorized image loader, works for existing conversation history, and does not depend on the assistant writing a Markdown image.
