@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {samplingPercent} from '../lib/progress.js';import {ImageRuntime} from '../lib/runtime.js';
 test('sampler percentage accepts tqdm and step callbacks without inventing loading progress',()=>{
- assert.equal(samplingPercent('Loading models'),null);assert.equal(samplingPercent('GPU memory 80% used'),null);
+ assert.equal(samplingPercent('Loading models'),null);assert.equal(samplingPercent('Loading checkpoint shards: 100%|████| 4/4',52),null);assert.equal(samplingPercent('10%|█ | 5/52',52),10);assert.equal(samplingPercent('GPU memory 80% used'),null);
  assert.equal(samplingPercent(' 10%|█ | 5/52 [02:28<24:21]\r 27%|██ | 14/52'),27);
  assert.equal(samplingPercent('Step 1/8\nStep 3/8\nDecoding image'),37);
  assert.equal(samplingPercent('Step 1/0\n150%|invalid'),null);assert.equal(samplingPercent('100%|████| 52/52'),100);
