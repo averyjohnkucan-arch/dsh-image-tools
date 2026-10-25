@@ -22,15 +22,17 @@ window.__ModuleLoader__.load({id:'dsh-image-tools',factory(require){
   let timing;try{timing=JSON.parse(text.split('\n')[0]).timing;}catch{}
   const totalMs=Number.isFinite(timing?.totalMs)&&timing.totalMs>=0?timing.totalMs:settled&&Number.isFinite(block.time)&&Number.isFinite(block.callTime)?Math.max(0,block.time-block.callTime):undefined;
   const raw=block.call?.argsRaw||block.argsRaw||block.args?.raw||'{}';let args={};try{args=JSON.parse(raw);}catch{}
-  const [percent,setPercent]=useState(null);
+  const [progress,setProgress]=useState(null);
   useEffect(()=>{
-   setPercent(null);if(phase!=='start'||!callId)return;
+   setProgress(null);if(phase!=='start'||!callId)return;
    let alive=true,timer;const controller=new AbortController();
-   const refresh=async()=>{try{const progress=await api('progress',{callId},controller.signal);if(alive)setPercent(Number.isFinite(progress?.percent)?progress.percent:null);}catch{}finally{if(alive)timer=setTimeout(refresh,2000);}};
+   const refresh=async()=>{try{const progress=await api('progress',{callId},controller.signal);if(alive)setProgress(progress);}catch{}finally{if(alive)timer=setTimeout(refresh,1000);}};
    void refresh();return()=>{alive=false;clearTimeout(timer);controller.abort();};
   },[phase,callId]);
   const operation=args.action||({create_image:'generate_photograph',create_image_art:'generate_art',edit_image:'edit_image'}[toolName])||toolName;
-  const summary=block.isError?'Error: '+text.split('\n')[0]:operation+(!settled&&Number.isFinite(percent)?' | '+percent+'%':'');
+  const stageLabel={queued:'Queued',loading:'Loading…',decoding:'Decoding…',restoring:'Restoring model…',saving:'Saving…',cancelled:'Cancelled',failed:'Failed'}[progress?.stage]||'Loading…';
+  const indicator=Number.isFinite(progress?.percent)?'~'+progress.percent+'%'+(progress.stage&&progress.stage!=='sampling'?' · '+stageLabel:''):stageLabel;
+  const summary=block.isError?'Error: '+text.split('\n')[0]:operation+(!settled&&phase==='start'?' | '+indicator:'');
   const section=(label,body)=>h('div',{className:'dit-result-section'},h('span',{className:'dit-result-label'},label),body);
   return h('div',{'data-image-tool-result':true},h('style',null,'.dit-native-title{font-weight:400}.dit-native-sep{background:var(--dsw-alias-label-caption);border-radius:1px;flex:none;width:2px;height:2px;margin:0 8px}.dit-native-summary{text-overflow:ellipsis;white-space:nowrap;min-width:0;font-size:var(--dsh-content-font-size-secondary,13px);line-height:calc(24px + var(--dsh-content-font-delta,0px));flex:auto;overflow:hidden}.dit-result-card{border:.5px solid var(--dsw-alias-border-l1);border-radius:var(--dsw-radius-lg);background:var(--dsw-alias-markdown-code-block);font:var(--dsw-font-markdown-code-block-small);margin:4px 0 4px 4px;overflow:hidden}.dit-result-section{display:grid;grid-template-columns:max-content minmax(0,1fr);align-items:baseline;column-gap:14px;padding:12px 16px}.dit-result-label{color:var(--dsw-alias-label-caption)}.dit-result-text{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;max-height:240px;overflow:auto;color:var(--dsw-alias-label-secondary)}'),
    h(DisclosureRow,{icon:h(IconSparkleRegular,{size:14}),title:'Tool call',titleClassName:'dit-native-title',open:expanded,expandable:phase!=='preparing',expandOnRowClick:true,keepContentWhenOpen:true,running:!settled,onToggle:toggle,collapsedContent:h(React.Fragment,null,h('span',{className:'dit-native-sep','aria-hidden':true}),h('span',{className:'dit-native-summary',style:block.isError?{color:'var(--dsw-alias-state-error-primary)'}:undefined},summary))},expanded&&h('div',{className:'dit-result-card'},

@@ -60,13 +60,13 @@ test('three direct tool names each render native image results and keep legacy h
 });
 test('native operation label updates percentage by exact call and stops polling on unmount',async()=>{
  const pending=[],requests=[];let percentage=10,cleared;
- const f=await fixture({fetch:async(url,options)=>{requests.push({url,options});return {ok:true,status:200,json:async()=>({result:{status:'running',percent:percentage}})};},setTimeout:fn=>{pending.push(fn);return 17;},clearTimeout:id=>{cleared=id;}});
+ const f=await fixture({fetch:async(url,options)=>{requests.push({url,options});return {ok:true,status:200,json:async()=>({result:{status:'running',stage:'sampling',percent:percentage}})};},setTimeout:fn=>{pending.push(fn);return 17;},clearTimeout:id=>{cleared=id;}});
  const view=f.entries.find(x=>x.entry.key==='create_image_art').component;
  const props={phase:'start',callId:'this-call-only',block:{},useDisclosure:()=>({expanded:false,toggle(){}})};
  f.render(view,props);const cleanup=f.effects[0]();await new Promise(r=>setImmediate(r));
- const tree=f.render(view,props);assert.ok(nodes(tree).some(x=>x.props.className==='dit-native-summary'&&x.children.includes('generate_art | 10%')));
+ const tree=f.render(view,props);assert.ok(nodes(tree).some(x=>x.props.className==='dit-native-summary'&&x.children.includes('generate_art | ~10%')));
  assert.equal(JSON.parse(requests[0].options.body).payload.callId,'this-call-only');assert.ok(nodes(tree).some(x=>x.type==='DisclosureRow'&&x.props.title==='Tool call'));
- percentage=27;await pending.shift()();assert.ok(nodes(f.render(view,props)).some(x=>x.children.includes('generate_art | 27%')));
+ percentage=27;await pending.shift()();assert.ok(nodes(f.render(view,props)).some(x=>x.children.includes('generate_art | ~27%')));
  cleanup();assert.equal(cleared,17);assert.equal(requests[0].options.signal.aborted,true);
 });
 test('completed image cards render at the turn tail outside collapsed tools, with no model response required',async()=>{
@@ -76,4 +76,16 @@ test('completed image cards render at the turn tail outside collapsed tools, wit
  const tree=f.render(view,{turn:7,useImageChat:fn=>fn(snapshot),loadImage:async()=> 'blob:preview'});
  assert.equal(tree.props['data-generated-images'],true);assert.equal(nodes(tree).filter(x=>typeof x.type==='function').length,1,'deduplicate attachments');
  assert.equal(f.render(view,{turn:8,useImageChat:fn=>fn(snapshot)}),null,'no cross-turn images');
+});
+
+test('all direct image tools show loading immediately and live percent while collapsed',async()=>{
+ for(const name of ['create_image','create_image_art','edit_image']){
+  const f=await fixture({fetch:async()=>({ok:true,status:200,json:async()=>({result:{status:'running',stage:'sampling',percent:47}})}),setTimeout:()=>17,clearTimeout:()=>{}});
+  const view=f.entries.find(x=>x.entry.key===name).component;
+  const props={phase:'start',callId:'exact-'+name,block:{},useDisclosure:()=>({expanded:false,toggle(){}})};
+  assert.ok(JSON.stringify(f.render(view,props)).includes('| Loading…'));
+  const cleanup=f.effects[0]();await new Promise(r=>setImmediate(r));
+  assert.ok(JSON.stringify(f.render(view,props)).includes('| ~47%'));cleanup();
+  assert.ok(!JSON.stringify(f.render(view,{...props,phase:'result',block:{content:[]}})).includes('| ~47%'));
+ }
 });

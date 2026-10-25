@@ -26,3 +26,11 @@ test('worker stdout updates sampler percentage across partial chunks and decodin
  const job={log:'',progress:''};await runtime.spawnWorker(job,process.execPath,['-e',"process.stdout.write('Step 1/8\\nStep ');setTimeout(()=>{process.stdout.write('3/8\\nDecoding image\\n');},15)"],new AbortController().signal);
  assert.equal(job.percent,37);assert.equal(job.progress,'Decoding image');await runtime.dispose();
 });
+
+test('native worker bars update progress across pipe chunks without GPU inference',async t=>{
+ const root=await mkdtemp(join(tmpdir(),'dsh-image-native-progress-'));t.after(()=>rm(root,{recursive:true,force:true}));const runtime=new ImageRuntime({},root);await runtime.init();
+ const job={callId:'native-call',status:'running',stage:'loading',samplingSteps:8,log:'',progress:''};runtime.jobs.set('job',job);
+ await runtime.spawnWorker(job,process.execPath,['-e',"process.stdout.write('\\r |====> | 1/8 - 6.42s/it\\x1b[K\\r |====> | 3/');setTimeout(()=>process.stdout.write('8 - 2.49it/s\\x1b[K'),15)"],new AbortController().signal);
+ assert.equal(job.percent,37);assert.equal(job.stage,'sampling');assert.equal((await runtime.action('progress',{callId:'native-call'})).percent,36);
+ runtime.jobs.clear();await runtime.dispose();
+});
