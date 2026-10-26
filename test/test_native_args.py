@@ -73,9 +73,11 @@ class NativeArguments(unittest.TestCase):
         parser.add_argument('launch');parser.add_argument('--profile','-p')
         parser.add_argument('--reason','-r');parser.add_argument('--appid','-i')
         parser.add_argument('arguments',nargs='*')
-        parsed,unknown=parser.parse_known_args(command[1:])
+        separator=command.index('--')
+        parsed,unknown=parser.parse_known_args(command[1:separator])
         self.assertEqual(parsed.profile,'performance')
-        self.assertEqual(parsed.arguments,args)
+        self.assertEqual(command[separator+1:],args)
+        self.assertEqual(parsed.arguments,[])
         self.assertEqual(unknown,[])
 
     def test_unavailable_requested_performance_hold_fails_clearly(self):
