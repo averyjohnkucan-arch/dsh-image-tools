@@ -93,3 +93,11 @@ While an image call runs, its native row shows the operation and reported sampli
 Completed images also appear in a dedicated card at the bottom of their chat turn, outside the collapsed tool/process group. This uses the saved attachment and session-authorized image loader, works for existing conversation history, and does not depend on the assistant writing a Markdown image.
 
 Image tool calls show a small live progress label in the native disclosure row for `create_image`, `create_image_art` and `edit_image`, including when collapsed. Loading is indeterminate; approximate whole-job percentages follow actual sampler steps, then decoding, model restoration and attachment saving. Only a completed job reaches 100%. Tensor-loading byte counts and VAE tile counts are not mistaken for sampling. The indicator polls by the exact call ID once per second and stops when the call finishes or unmounts.
+
+## Recommended models and verified downloads
+
+Open **Recommended models · exact revisions and hashes** in this plugin's settings card. The catalog records the checkpoints/components from the owner's configured setup with immutable repository revisions and SHA-256 (or Git blob hashes for small snapshot assets). Expand **Files, sizes and exact identities** before selecting a set.
+
+**Download / verify recommended** saves a complete pinned set in this plugin's private `recommended-models` directory. Downloads resume from partial files, validate content before publishing final files, preserve existing models, and expose progress, cancellation and explicit failures. Repeating the action verifies/reuses existing files. Downloads do not start inference. **Add downloaded files** fills the existing model import/edit workflow for review and saving. Runtime installation remains separate.
+
+Some configured artifacts are locally converted or assembled from multiple sources. Their exact local hashes are listed, but downloading the original publisher checkpoint cannot recreate those bytes. Use **Add existing model** and the normal importer for those entries. No incomplete component set is presented as a working download. Recommendations describe the saved setup; they do not establish memory fit or model quality on another computer.

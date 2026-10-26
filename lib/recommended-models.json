@@ -1,0 +1,595 @@
+{
+  "version": 1,
+  "models": [
+    {
+      "id": "qwen-heretic",
+      "name": "Qwen Image 2.1 Heretic \u00b7 non-Turbo",
+      "recommended": true,
+      "files": [
+        {
+          "name": "model_index.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/model_index.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "cf1ecd104ea090855d60d8cec0895c1e9d6ee41b2f87e231b678beecd1cf7809",
+          "size": 447
+        },
+        {
+          "name": "added_tokens.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/processor/added_tokens.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "c0284b582e14987fbd3d5a2cb2bd139084371ed9acbae488829a1c900833c680",
+          "size": 707
+        },
+        {
+          "name": "merges.txt",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/processor/merges.txt",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+          "size": 1671853
+        },
+        {
+          "name": "preprocessor_config.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/processor/preprocessor_config.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "93585062a80db5e8ca038efc7726a3e6411d9db948472d81d63c6303993be8c5",
+          "size": 782
+        },
+        {
+          "name": "special_tokens_map.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/processor/special_tokens_map.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "76862e765266b85aa9459767e33cbaf13970f327a0e88d1c65846c2ddd3a1ecd",
+          "size": 613
+        },
+        {
+          "name": "tokenizer.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/processor/tokenizer.json",
+          "downloadable": true,
+          "evidence": "Local file SHA-256 matches the pinned publisher blob",
+          "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+          "size": 11422654,
+          "repo": "Qwen/Qwen-Image-2.1",
+          "revision": "d26bb61231c349cf6b7896fa83353113880e1ba3",
+          "file": "processor/tokenizer.json"
+        },
+        {
+          "name": "tokenizer_config.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/processor/tokenizer_config.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "81ec7bb9530159b326c0bef1d0b6c33d392090524014ea3f0123a3c1eb9c2af5",
+          "size": 5445
+        },
+        {
+          "name": "video_preprocessor_config.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/processor/video_preprocessor_config.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "59c5c9eb52182eb14c06ffb10ca9effd29adce5f238a95de23ca14a38dbd2cb1",
+          "size": 817
+        },
+        {
+          "name": "vocab.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/processor/vocab.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+          "size": 2776833
+        },
+        {
+          "name": "scheduler_config.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/scheduler/scheduler_config.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "5895f3a167c14a967fe9ac70c64924ae5acc79799e0679fd12907e594a713cd1",
+          "size": 485
+        },
+        {
+          "name": "config.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/text_encoder/config.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "1cce4745c650d4964201e0aa6af129adb4b53b0f0a9989fa2a6ce8da5f41641b",
+          "size": 1643
+        },
+        {
+          "name": "generation_config.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/text_encoder/generation_config.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "81207a236dbd29cd0df5208c43225ff6d0155e3fe63a40ab2f7331fcf04f4834",
+          "size": 213
+        },
+        {
+          "name": "model-00001-of-00004.safetensors",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/text_encoder/model-00001-of-00004.safetensors",
+          "downloadable": true,
+          "evidence": "Local file SHA-256 matches the pinned publisher blob",
+          "sha256": "6e217f5e222d9bee105235f2186e89e56e14b36eed379373e1c447a12c074b6f",
+          "size": 4905357176,
+          "repo": "pottokao/Qwen-Image-2.1-Text-Encoder-Heretic",
+          "revision": "047e54342fc4bfcd2addd54049db9c90bb74731e",
+          "file": "model-00001-of-00004.safetensors"
+        },
+        {
+          "name": "model-00002-of-00004.safetensors",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/text_encoder/model-00002-of-00004.safetensors",
+          "downloadable": true,
+          "evidence": "Local file SHA-256 matches the pinned publisher blob",
+          "sha256": "0226ae289505520c5d223ef9336856c8372682778ae4360ad436b9c9cbb797bf",
+          "size": 4915962456,
+          "repo": "pottokao/Qwen-Image-2.1-Text-Encoder-Heretic",
+          "revision": "047e54342fc4bfcd2addd54049db9c90bb74731e",
+          "file": "model-00002-of-00004.safetensors"
+        },
+        {
+          "name": "model-00003-of-00004.safetensors",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/text_encoder/model-00003-of-00004.safetensors",
+          "downloadable": true,
+          "evidence": "Local file SHA-256 matches the pinned publisher blob",
+          "sha256": "9c62f604a7042811aeb27b85c134cce90c83f5a93b5903402f85b6dddf6e4da2",
+          "size": 4974674312,
+          "repo": "pottokao/Qwen-Image-2.1-Text-Encoder-Heretic",
+          "revision": "047e54342fc4bfcd2addd54049db9c90bb74731e",
+          "file": "model-00003-of-00004.safetensors"
+        },
+        {
+          "name": "model-00004-of-00004.safetensors",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/text_encoder/model-00004-of-00004.safetensors",
+          "downloadable": true,
+          "evidence": "Local file SHA-256 matches the pinned publisher blob",
+          "sha256": "8516dd606abf83378e6936d94d54294de475e281dff72ad33b281fe0b87d4c15",
+          "size": 2738345504,
+          "repo": "pottokao/Qwen-Image-2.1-Text-Encoder-Heretic",
+          "revision": "047e54342fc4bfcd2addd54049db9c90bb74731e",
+          "file": "model-00004-of-00004.safetensors"
+        },
+        {
+          "name": "model.safetensors.index.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/text_encoder/model.safetensors.index.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "dd08ff0fbf2bed6ef1827ef909e3e9057d6d75c4be0fac1273abb880d456b9ab",
+          "size": 67795
+        },
+        {
+          "name": "config.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/transformer/config.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "56ae3281c4e6c2d1aa3658252d187488071815fd79bef15808bb0205fc1a2241",
+          "size": 370
+        },
+        {
+          "name": "diffusion_pytorch_model-00001-of-00002.safetensors",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/transformer/diffusion_pytorch_model-00001-of-00002.safetensors",
+          "downloadable": true,
+          "evidence": "Local file SHA-256 matches the pinned publisher blob",
+          "sha256": "9e6bc2d641e67bf277895ea8777141044a38f3edb7101bc469b2961dd7c36b4b",
+          "size": 9968332504,
+          "repo": "Qwen/Qwen-Image-2.1",
+          "revision": "d26bb61231c349cf6b7896fa83353113880e1ba3",
+          "file": "transformer/diffusion_pytorch_model-00001-of-00002.safetensors"
+        },
+        {
+          "name": "diffusion_pytorch_model-00002-of-00002.safetensors",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/transformer/diffusion_pytorch_model-00002-of-00002.safetensors",
+          "downloadable": true,
+          "evidence": "Local file SHA-256 matches the pinned publisher blob",
+          "sha256": "3aaf234dcbe128530479735854a346b5e3e66283b7c11db56f836bbd1c13ebaa",
+          "size": 4261951904,
+          "repo": "Qwen/Qwen-Image-2.1",
+          "revision": "d26bb61231c349cf6b7896fa83353113880e1ba3",
+          "file": "transformer/diffusion_pytorch_model-00002-of-00002.safetensors"
+        },
+        {
+          "name": "diffusion_pytorch_model.safetensors.index.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/transformer/diffusion_pytorch_model.safetensors.index.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "17987f6623b1c814d0ef55a137d99142b7b3b040eb1bf241b5575dd35af803a2",
+          "size": 30283
+        },
+        {
+          "name": "config.json",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/vae/config.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "9785d527b278cb8b210e9f48a8028d92a4190968ce7e24c8fc85d9d1b82f6ba2",
+          "size": 2079
+        },
+        {
+          "name": "diffusion_pytorch_model.safetensors",
+          "role": "modelPath",
+          "target": "qwen-heretic-modelPath/vae/diffusion_pytorch_model.safetensors",
+          "downloadable": true,
+          "evidence": "Local file SHA-256 matches the pinned publisher blob",
+          "sha256": "a07a1b7c4ee2966a1b3bdc37de9b4f983d56937e46619f709a80b6e490675417",
+          "size": 1350989512,
+          "repo": "Qwen/Qwen-Image-2.1",
+          "revision": "d26bb61231c349cf6b7896fa83353113880e1ba3",
+          "file": "vae/diffusion_pytorch_model.safetensors"
+        }
+      ],
+      "settings": {
+        "backend": "qwen-diffusers",
+        "tasks": [
+          "photograph",
+          "edit"
+        ],
+        "guidance": 1,
+        "variant": "standard",
+        "steps": 40
+      },
+      "notes": "Import the complete checkpoint and its matching encoder, VAE and editing projector. Precision is preserved."
+    },
+    {
+      "id": "krea-turbo-heretic",
+      "name": "Krea 2 Turbo \u00b7 Heretic encoder",
+      "recommended": true,
+      "files": [
+        {
+          "repo": "Comfy-Org/Krea-2",
+          "revision": "eb1eddd3983a54678545a9b2c178c5853b30f7be",
+          "file": "diffusion_models/krea2_turbo_int8_convrot.safetensors",
+          "sha256": "8e4eeda70dd5037ab1ba2bef6b417f9f901e26093117cf397f741fc1fdaaf3f1",
+          "size": 13492686496,
+          "name": "krea2_turbo_int8_convrot.safetensors",
+          "role": "modelPath",
+          "target": "krea2_turbo_int8_convrot.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "DreamFast/Qwen3-VL-4b-Heretic-ComfyUI",
+          "revision": "c5bd34e940564e4b5b64286694d72f47f429c126",
+          "file": "qwen3-vl-4b-heretic_int8.safetensors",
+          "sha256": "f70bc614fa5448fb11915fd03d9041dbacaff36f4bf1ca2c9761dbfb9842a436",
+          "size": 4836949032,
+          "name": "qwen3-vl-4b-heretic_int8.safetensors",
+          "role": "textEncoderPath",
+          "target": "qwen3-vl-4b-heretic_int8.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "Comfy-Org/Krea-2",
+          "revision": "eb1eddd3983a54678545a9b2c178c5853b30f7be",
+          "file": "vae/qwen_image_vae.safetensors",
+          "sha256": "a70580f0213e67967ee9c95f05bb400e8fb08307e017a924bf3441223e023d1f",
+          "size": 253806246,
+          "name": "qwen_image_vae.safetensors",
+          "role": "vaePath",
+          "target": "qwen_image_vae.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        }
+      ],
+      "settings": {
+        "backend": "comfy-krea",
+        "tasks": [
+          "art"
+        ],
+        "guidance": 0,
+        "variant": "turbo",
+        "steps": 8
+      },
+      "notes": "Import the complete checkpoint and its matching encoder, VAE and editing projector. Precision is preserved."
+    },
+    {
+      "id": "qwen-turbo-gguf",
+      "name": "Qwen Image 2.1 Turbo \u00b7 Q8 Heretic encoder",
+      "recommended": true,
+      "files": [
+        {
+          "repo": "AtomicChat/Qwen-Image-2.1-Turbo-GGUF",
+          "revision": "f5996597b053664d0885cfaa0dcc88afb47f92f6",
+          "file": "Qwen-Image-2.1-Turbo-Q8_0.gguf",
+          "sha256": "99f498fb7188be7eac9eb5f345a9e074d30eef3ca235b419e92563e5b48073c4",
+          "size": 7591554784,
+          "name": "Qwen-Image-2.1-Turbo-Q8_0.gguf",
+          "role": "modelPath",
+          "target": "Qwen-Image-2.1-Turbo-Q8_0.gguf",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "AtomicChat/Qwen-Image-2.1-Turbo-Uncensored-GGUF",
+          "revision": "df96693dbdfb8738c0bf1bbd0337d149808db948",
+          "file": "Qwen-Image-2.1-Turbo-Uncensored-Q8_0.gguf",
+          "sha256": "f8f9f6276b726db5291f4a5343089612cb5fd08aa81e8f0791dc66d2c03d07ca",
+          "size": 8709520096,
+          "name": "Qwen-Image-2.1-Turbo-Uncensored-Q8_0.gguf",
+          "role": "textEncoderPath",
+          "target": "Qwen-Image-2.1-Turbo-Uncensored-Q8_0.gguf",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "AtomicChat/Qwen-Image-2.1-Turbo-Uncensored-GGUF",
+          "revision": "df96693dbdfb8738c0bf1bbd0337d149808db948",
+          "file": "mmproj-Qwen-Image-2.1-Turbo-Uncensored-F16.gguf",
+          "sha256": "d9870a1f168db3d814596216aaf35702154147b443572c7939acca1802621ac6",
+          "size": 1159029984,
+          "name": "mmproj-Qwen-Image-2.1-Turbo-Uncensored-F16.gguf",
+          "role": "projectorPath",
+          "target": "mmproj-Qwen-Image-2.1-Turbo-Uncensored-F16.gguf",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "Comfy-Org/Qwen-Image-2.1",
+          "revision": "a8342359c61979b06a8dafb1a47991fe1f30e994",
+          "file": "vae/qwen_image_2.1_vae_bf16.safetensors",
+          "sha256": "bb21f7473051e1ac368515dd3f2e15cd44d7a11748ee8823e1ddca3e4876b7c9",
+          "size": 675509688,
+          "name": "qwen_image_2.1_vae_bf16.safetensors",
+          "role": "vaePath",
+          "target": "qwen_image_2.1_vae_bf16.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        }
+      ],
+      "settings": {
+        "backend": "qwen-sdcpp",
+        "tasks": [
+          "photograph",
+          "edit"
+        ],
+        "guidance": 1,
+        "variant": "turbo",
+        "steps": 8
+      },
+      "notes": "Import the complete checkpoint and its matching encoder, VAE and editing projector. Precision is preserved."
+    },
+    {
+      "id": "krea-raw-heretic",
+      "name": "Krea 2 Raw \u00b7 non-Turbo",
+      "recommended": true,
+      "files": [
+        {
+          "repo": "Comfy-Org/Krea-2",
+          "revision": "eb1eddd3983a54678545a9b2c178c5853b30f7be",
+          "file": "diffusion_models/krea2_raw_int8_convrot.safetensors",
+          "sha256": "5585a4a38c4bcfb6fde2d480a4aa6edf7f665721ebde56d30662c35a45f5fa5c",
+          "size": 13492686496,
+          "name": "krea2_raw_int8_convrot.safetensors",
+          "role": "modelPath",
+          "target": "krea2_raw_int8_convrot.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "DreamFast/Qwen3-VL-4b-Heretic-ComfyUI",
+          "revision": "c5bd34e940564e4b5b64286694d72f47f429c126",
+          "file": "qwen3-vl-4b-heretic_int8.safetensors",
+          "sha256": "f70bc614fa5448fb11915fd03d9041dbacaff36f4bf1ca2c9761dbfb9842a436",
+          "size": 4836949032,
+          "name": "qwen3-vl-4b-heretic_int8.safetensors",
+          "role": "textEncoderPath",
+          "target": "qwen3-vl-4b-heretic_int8.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "Comfy-Org/Krea-2",
+          "revision": "eb1eddd3983a54678545a9b2c178c5853b30f7be",
+          "file": "vae/qwen_image_vae.safetensors",
+          "sha256": "a70580f0213e67967ee9c95f05bb400e8fb08307e017a924bf3441223e023d1f",
+          "size": 253806246,
+          "name": "qwen_image_vae.safetensors",
+          "role": "vaePath",
+          "target": "qwen_image_vae.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        }
+      ],
+      "settings": {
+        "backend": "comfy-krea",
+        "tasks": [
+          "art"
+        ],
+        "guidance": 3.5,
+        "variant": "standard",
+        "steps": 52
+      },
+      "notes": "Import the complete checkpoint and its matching encoder, VAE and editing projector. Precision is preserved."
+    },
+    {
+      "id": "qwen-heretic-portable",
+      "name": "Qwen Image 2.1 Heretic \u00b7 portable BF16",
+      "recommended": true,
+      "files": [
+        {
+          "name": "diffusion_pytorch_model.safetensors.index.json",
+          "role": "modelPath",
+          "target": "diffusion_pytorch_model.safetensors.index.json",
+          "downloadable": false,
+          "evidence": "Local file identity; needs a verified source pin",
+          "sha256": "17987f6623b1c814d0ef55a137d99142b7b3b040eb1bf241b5575dd35af803a2",
+          "size": 30283
+        },
+        {
+          "repo": "AtomicChat/Qwen-Image-2.1-Turbo-Uncensored-GGUF",
+          "revision": "df96693dbdfb8738c0bf1bbd0337d149808db948",
+          "file": "Qwen-Image-2.1-Turbo-Uncensored-Q8_0.gguf",
+          "sha256": "f8f9f6276b726db5291f4a5343089612cb5fd08aa81e8f0791dc66d2c03d07ca",
+          "size": 8709520096,
+          "name": "Qwen-Image-2.1-Turbo-Uncensored-Q8_0.gguf",
+          "role": "textEncoderPath",
+          "target": "Qwen-Image-2.1-Turbo-Uncensored-Q8_0.gguf",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "AtomicChat/Qwen-Image-2.1-Turbo-Uncensored-GGUF",
+          "revision": "df96693dbdfb8738c0bf1bbd0337d149808db948",
+          "file": "mmproj-Qwen-Image-2.1-Turbo-Uncensored-F16.gguf",
+          "sha256": "d9870a1f168db3d814596216aaf35702154147b443572c7939acca1802621ac6",
+          "size": 1159029984,
+          "name": "mmproj-Qwen-Image-2.1-Turbo-Uncensored-F16.gguf",
+          "role": "projectorPath",
+          "target": "mmproj-Qwen-Image-2.1-Turbo-Uncensored-F16.gguf",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "Comfy-Org/Qwen-Image-2.1",
+          "revision": "a8342359c61979b06a8dafb1a47991fe1f30e994",
+          "file": "vae/qwen_image_2.1_vae_bf16.safetensors",
+          "sha256": "bb21f7473051e1ac368515dd3f2e15cd44d7a11748ee8823e1ddca3e4876b7c9",
+          "size": 675509688,
+          "name": "qwen_image_2.1_vae_bf16.safetensors",
+          "role": "vaePath",
+          "target": "qwen_image_2.1_vae_bf16.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        }
+      ],
+      "settings": {
+        "backend": "qwen-sdcpp",
+        "tasks": [
+          "photograph",
+          "edit"
+        ],
+        "guidance": 1,
+        "variant": "standard",
+        "steps": 40
+      },
+      "notes": "Import the complete checkpoint and its matching encoder, VAE and editing projector. Precision is preserved."
+    },
+    {
+      "id": "krea-turbo-heretic-portable",
+      "name": "Krea 2 Turbo \u00b7 Heretic encoder \u00b7 portable BF16",
+      "recommended": true,
+      "files": [
+        {
+          "repo": "Comfy-Org/Krea-2",
+          "revision": "eb1eddd3983a54678545a9b2c178c5853b30f7be",
+          "file": "diffusion_models/krea2_turbo_bf16.safetensors",
+          "sha256": "78bbf8f4165eda19cea3cb06c78089221932a39e2eed8af9da741f942c47ffb3",
+          "size": 26283332608,
+          "name": "krea2_turbo_bf16.safetensors",
+          "role": "modelPath",
+          "target": "krea2_turbo_bf16.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "DreamFast/Qwen3-VL-4b-Heretic-ComfyUI",
+          "revision": "c5bd34e940564e4b5b64286694d72f47f429c126",
+          "file": "qwen3-vl-4b-heretic.safetensors",
+          "sha256": "3fba9f5a2059c719da105bcb510b9df0450bddde52d96968c607802c9d86f9ce",
+          "size": 8875713408,
+          "name": "qwen3-vl-4b-heretic.safetensors",
+          "role": "textEncoderPath",
+          "target": "qwen3-vl-4b-heretic.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "Comfy-Org/Krea-2",
+          "revision": "eb1eddd3983a54678545a9b2c178c5853b30f7be",
+          "file": "vae/qwen_image_vae.safetensors",
+          "sha256": "a70580f0213e67967ee9c95f05bb400e8fb08307e017a924bf3441223e023d1f",
+          "size": 253806246,
+          "name": "qwen_image_vae.safetensors",
+          "role": "vaePath",
+          "target": "qwen_image_vae.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        }
+      ],
+      "settings": {
+        "backend": "krea-sdcpp",
+        "tasks": [
+          "art"
+        ],
+        "guidance": 0,
+        "variant": "turbo",
+        "steps": 8
+      },
+      "notes": "Import the complete checkpoint and its matching encoder, VAE and editing projector. Precision is preserved."
+    },
+    {
+      "id": "krea-raw-heretic-portable",
+      "name": "Krea 2 Raw \u00b7 non-Turbo \u00b7 portable BF16",
+      "recommended": true,
+      "files": [
+        {
+          "repo": "Comfy-Org/Krea-2",
+          "revision": "eb1eddd3983a54678545a9b2c178c5853b30f7be",
+          "file": "diffusion_models/krea2_raw_bf16.safetensors",
+          "sha256": "f99bb0ff8e362b77342bc4994e0c50906fe7ef7074864b181b7d48d2fa6d03d7",
+          "size": 26283332608,
+          "name": "krea2_raw_bf16.safetensors",
+          "role": "modelPath",
+          "target": "krea2_raw_bf16.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "DreamFast/Qwen3-VL-4b-Heretic-ComfyUI",
+          "revision": "c5bd34e940564e4b5b64286694d72f47f429c126",
+          "file": "qwen3-vl-4b-heretic.safetensors",
+          "sha256": "3fba9f5a2059c719da105bcb510b9df0450bddde52d96968c607802c9d86f9ce",
+          "size": 8875713408,
+          "name": "qwen3-vl-4b-heretic.safetensors",
+          "role": "textEncoderPath",
+          "target": "qwen3-vl-4b-heretic.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        },
+        {
+          "repo": "Comfy-Org/Krea-2",
+          "revision": "eb1eddd3983a54678545a9b2c178c5853b30f7be",
+          "file": "vae/qwen_image_vae.safetensors",
+          "sha256": "a70580f0213e67967ee9c95f05bb400e8fb08307e017a924bf3441223e023d1f",
+          "size": 253806246,
+          "name": "qwen_image_vae.safetensors",
+          "role": "vaePath",
+          "target": "qwen_image_vae.safetensors",
+          "downloadable": true,
+          "evidence": "Existing local download/hash receipt"
+        }
+      ],
+      "settings": {
+        "backend": "krea-sdcpp",
+        "tasks": [
+          "art"
+        ],
+        "guidance": 3.5,
+        "variant": "standard",
+        "steps": 52
+      },
+      "notes": "Import the complete checkpoint and its matching encoder, VAE and editing projector. Precision is preserved."
+    }
+  ]
+}

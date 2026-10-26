@@ -28,7 +28,9 @@
     "cordis.patch.yml",
     "README.md",
     "LICENSE",
-    "QUALIFICATION.md"
+    "QUALIFICATION.md",
+    "lib/recommended-models.mjs",
+    "lib/recommended-models.json"
   ],
   "scripts": {
     "test": "node --test test/*.test.js",
