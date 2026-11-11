@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .engine/
 *.log
+
+# DSH compatibility workflow scratch data
+.compat-home/
+.compat-packed/
