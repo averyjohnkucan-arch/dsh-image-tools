@@ -1,12 +1,12 @@
 {
   "name": "dsh-image-tools",
-  "version": "0.3.2",
+  "version": "0.3.3-rc4.1",
   "description": "Local Qwen image editing and photography, Krea art, and cooperative GPU handoff for DeepSeek Harness.",
   "type": "module",
   "license": "MIT",
   "engines": {
-    "node": ">=22.19",
-    "dsh": ">=0.2.2-rc.1 <0.3.0-0"
+    "node": ">=24.9.0",
+    "dsh": "0.2.2-rc.4"
   },
   "repository": {
     "type": "git",
@@ -41,8 +41,8 @@
   "peerDependencies": {
     "@deepseek-ai/cordis": "~4.1.0",
     "@deepseek-ai/schemastery": "~3.19.0",
-    "@deepseek-ai/dsh-tools": ">=0.2.2-rc.1 <0.3.0-0",
-    "@deepseek-ai/dsh-sandbox": ">=0.2.2-rc.1 <0.3.0-0"
+    "@deepseek-ai/dsh-tools": "0.2.2-rc.4",
+    "@deepseek-ai/dsh-sandbox": "0.2.2-rc.4"
   },
   "dsh": {
     "bundle": {
@@ -60,7 +60,7 @@
     }
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-tools": "0.2.2-rc.1",
-    "@deepseek-ai/dsh-sandbox": "0.2.2-rc.1"
+    "@deepseek-ai/dsh-tools": "0.2.2-rc.4",
+    "@deepseek-ai/dsh-sandbox": "0.2.2-rc.4"
   }
 }
