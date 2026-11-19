@@ -4,6 +4,10 @@ A standalone Cordis plugin verified on DeepSeek Harness 0.2.2-rc.4. Qwen Image 2
 
 Paste `https://github.com/averyjohnkucan-arch/dsh-image-tools` into **Plugins → Add plugin**, enable it, and open **Settings → Image Tools**. The plugin contains adapters and an isolated runtime installer, not model weights. Point it at models you have downloaded.
 
+## Find existing image models
+
+Open **Settings → Image Tools → Import model**, choose the parent folder that contains your model assets, and select **Scan this folder and subfolders**. Complete catalogued model sets are added to the draft with suggested task defaults. Review the defaults and select **Save changes**. The scan matches filenames and byte sizes without loading weights, and you can still select individual files for custom models.
+
 ## Import and configure
 
 Click **Import model**. Choose a complete Qwen Diffusers folder, or select the denoiser, text encoder, VAE and optional vision projector together. Selections persist as you browse between folders. The importer reads bounded file headers and model metadata, assigns recognized components, and opens the result for review. It does not move or copy weights. Unknown families, uncertain Turbo variants and ambiguous components require a manual choice. Import one checkpoint at a time. A Safetensors shard index can identify its component's shards; individual unrelated checkpoints are never silently combined.
