@@ -1,6 +1,6 @@
 # DSH Image Tools
 
-A standalone Cordis plugin for DeepSeek Harness 0.2.1-rc.2. Qwen Image 2.1 provides photographs and multi-image editing; Krea 2 provides artistic generation. No Harness core patch is needed.
+A standalone Cordis plugin verified on DeepSeek Harness 0.2.2-rc.4. Qwen Image 2.1 provides photographs and multi-image editing. Krea 2 provides artistic generation.
 
 Paste `https://github.com/averyjohnkucan-arch/dsh-image-tools` into **Plugins → Add plugin**, enable it, and open **Settings → Image Tools**. The plugin contains adapters and an isolated runtime installer, not model weights. Point it at models you have downloaded.
 
