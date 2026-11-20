@@ -28,7 +28,7 @@ The plugin registers one tool, `create_image`. Give it a prompt. It uses Qwen Im
 | Artwork | A gouache illustration of a sailboat at dusk, with broad cobalt shapes, cream highlights, and an off-center composition. |
 | Edit | Change the mug from white to cobalt blue. Keep its shape, background, and shadows. |
 
-Use the optional `mode` field when the request clearly calls for `photo`, `art`, or `edit`. Auto handles common prompt cues and defaults to Qwen for a new image without a style cue. If cues conflict or an attachment makes the intent unclear, the tool returns one clarification question before rendering. For an edit, provide up to ten image attachment IDs in order or use the latest conversation images. Original attachments are preserved.
+The chat model chooses `photo` (Qwen Turbo) or `art` (Krea Turbo) using the descriptions in the tool schema. The default is `photo`. For an edit or image reference, choose `photo` and supply 1–10 conversation image attachment IDs in input order. The tool preserves the original attachments.
 
 Qwen can use AtomicChat’s Uncensored Q8 text encoder with the matching vision projector. Krea can use DreamFast’s Heretic Qwen3-VL-4B text encoder. These are encoder choices. [AtomicChat encoder](https://huggingface.co/AtomicChat/Qwen-Image-2.1-Turbo-Uncensored-GGUF) · [DreamFast encoder](https://huggingface.co/DreamFast/Qwen3-VL-4b-Heretic-ComfyUI)
 

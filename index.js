@@ -1,5 +1,4 @@
 import Schema from '@deepseek-ai/schemastery';import {defineTool} from '@deepseek-ai/dsh-tools';import {randomBytes,timingSafeEqual} from 'node:crypto';import {ImageRuntime} from './lib/runtime.js';
-import {routeImage} from './lib/routing.js';
 export const inject=['tools','attachments','webServer','sandboxPolicy'];
 export const Config=Schema.object({dataDir:Schema.string().default('')});
 const imageSchema={type:'object',additionalProperties:false,properties:{attachmentId:{type:'string',required:true},mediaType:{type:'string',required:true},bytes:{type:'integer',required:true},width:{type:'integer',required:true},height:{type:'integer',required:true},name:{type:'string'}}};
@@ -17,8 +16,8 @@ export async function apply(ctx,config){
  }}));
  const parameters={
   prompt:{type:'string',required:true,description:'Describe the desired image in plain language. For a photo, name the subject, setting, framing and light when useful. For art, name the medium or visual style and the composition. For an edit, say what should change and what must stay the same. Identify multiple input images by their order. Preserve requested exact text in quotes and keep the user’s stated constraints.'},
-  mode:{type:'string',enum:['auto','photo','art','edit'],default:'auto',description:'Optional. Use photo for realistic images, product shots, and photographed subjects with Qwen Turbo. Use art for illustrations, stylized graphics, and concept art with Krea Turbo. Use edit for an attached or previously generated image that the user wants changed, combined, or used as a reference with Qwen Turbo. Follow an explicitly requested model when it can do the task. Auto infers the route from the prompt. If the tool returns needs_clarification, ask its question before rendering.'},
-  image_ids:{type:'array',items:{type:'string'},description:'For edits, list the full attachment IDs in input order. Omit to use the most recent images in this conversation. Supports 1–10.'},
+  mode:{type:'string',enum:['photo','art'],default:'photo',description:'Choose photo for photographs and realistic scenes (Qwen Turbo), or art for illustrations, stylized graphics, and concept art (Krea Turbo). Follow the user’s model or style preference. Defaults to photo. Use photo with image_ids for editing or image references.'},
+  image_ids:{type:'array',items:{type:'string'},description:'For a Qwen edit or reference, pass 1–10 complete conversation image attachment IDs in input order and choose photo. Omit for a new image from text.'},
   size:{type:'string',enum:['Square256','Square512','Square1024','SD','HD','2K','4K','8K','square-256','square-512','square-1024','720p-landscape','720p-portrait','1080p-landscape','1080p-portrait','4k-landscape','4k-portrait','8k-landscape','8k-portrait'],description:'Defaults to Square512. HD and larger sizes require an explicit user request and confirm_large=true.'},
   orientation:{type:'string',enum:['landscape','portrait'],description:'Optional orientation for nonsquare presets.'},
   width:{type:'integer',description:'Custom width in pixels. Supply height too and omit size.'},
@@ -30,21 +29,18 @@ export async function apply(ctx,config){
  const output={schema:{type:'object',additionalProperties:false,properties:{data:{type:'string',required:true},image:imageSchema}},render:(_args,value)=>[{type:'text',text:value.data},...(value.image?[{type:'image',attachment:value.image}]:[])]};
  const tool=defineTool({
   name:'create_image',
-  description:'Create a new local image or edit conversation images. Qwen Image 2.1 Turbo handles photographs, realistic scenes, and edits. Krea 2 Turbo handles illustrations and stylized artwork. Call directly with a prompt. Pick the mode when the user’s intent makes the best route clear. Leave it on auto for a straightforward prompt without a model preference. Ask one short question only when a missing detail would materially change the result.',
+  description:'Create a new local image or edit conversation images. Choose photo for Qwen Image 2.1 Turbo or art for Krea 2 Turbo. Photo is the default. To edit or reference an image, choose photo and pass its attachment ID.',
   parameters,output,timeoutMs:14400000,isConcurrencySafe:()=>false,
   presentCall:args=>({card:'generic',title:'Create image',kind:'other',rawInput:args}),
   async execute(args,exec){
    if(!exec.agent)throw Error('Use an active conversation for image generation.');
-   const {action,question}=routeImage(args,()=>exec.agent.session?.snapshotEvents?.()||[]);
-   if(question)return {data:JSON.stringify({status:'needs_clarification',question})};
-   const {prompt,image_ids,size,orientation,width,height,confirm_large,seed,execution}=args;
-   let result;
-   try {
-    result=await runtime.action(action,{action,prompt,image_ids,size,orientation,width,height,confirm_large,seed,execution,quality:'fast_normal_quality'},exec);
-   } catch (error) {
-    if(error.code!=='IMAGE_ATTACHMENT_REQUIRED')throw error;
-    return {data:JSON.stringify({status:'needs_clarification',question:'Can you attach the image you want changed?'})};
+   const {mode='photo',prompt,image_ids,size,orientation,width,height,confirm_large,seed,execution}=args;
+   let action=mode==='art'?'generate_art':'generate_photograph';
+   if(image_ids?.length){
+    if(mode==='art')throw Error('Choose photo to edit or reference images with Qwen Turbo.');
+    action='edit_image';
    }
+   const result=await runtime.action(action,{action,prompt,image_ids,size,orientation,width,height,confirm_large,seed,execution,quality:'fast_normal_quality'},exec);
    const {image,...data}=result;
    return {data:JSON.stringify({...data,action})+(image?'\nDisplay the finished image with Markdown: ![Image](<'+data.path+'>).':''),...(image?{image}:{})};
   },
