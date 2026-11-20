@@ -20,15 +20,19 @@ Settings, model paths and private runtimes live under `~/.dsh/dsh-image-tools/` 
 
 ## One tool and explicit quality
 
-Enabling the plugin registers three ordinary tools: `create_image` for photographs, `create_image_art` for art and illustrations, and `edit_image` for editing or combining attached images. Call them directly with a prompt; no menu call or action parameter is needed. Without Tool Manager they appear in the model’s tool context immediately. Tool Manager independently controls discovery or always-available exposure for each tool. Configuration, runtime setup, job status and cancellation remain in Settings → Image Tools. Existing `image_tools` conversation results still render. Editing accepts 1–10 conversation attachments in selected order and preserves originals. Results are real DSH image attachments plus workspace-relative PNG paths.
+The plugin registers one tool, `create_image`. Give it a prompt. It uses Qwen Image 2.1 Turbo for photographs and image edits, and Krea 2 Turbo for illustrations and stylized artwork. Settings → Image Tools assigns the default Turbo profile for each route. Tool Manager controls how the single tool is discovered. Earlier image tool results remain visible in chat.
 
-**Turbo is the default** for each task:
+| What you want | Example prompt |
+| --- | --- |
+| Photograph | A studio photo of a white ceramic mug on dark slate, viewed at table level with soft window light. |
+| Artwork | A gouache illustration of a sailboat at dusk, with broad cobalt shapes, cream highlights, and an off-center composition. |
+| Edit | Change the mug from white to cobalt blue. Keep its shape, background, and shadows. |
 
-- `quality="fast_normal_quality"` selects the actual Turbo checkpoint.
-- `quality="slow_high_quality"` selects the separately configured non-Turbo checkpoint. It takes longer and may improve detail; Krea Raw is a base checkpoint and is not guaranteed to beat Turbo.
-- Omit `quality`, or use `default`, to follow the saved per-task default. Settings show its concrete checkpoint and name. Defaults remain configurable.
+Use the optional `mode` field when the request clearly calls for `photo`, `art`, or `edit`. Auto handles common prompt cues and defaults to Qwen for a new image without a style cue. If cues conflict or an attachment makes the intent unclear, the tool returns one clarification question before rendering. For an edit, provide up to ten image attachment IDs in order or use the latest conversation images. Original attachments are preserved.
 
-These choices select different weights, not fewer steps on the same checkpoint. A missing requested variant produces an actionable error. There is no silent substitution. Sampling is stored per profile; models cannot override steps in a tool call.
+Qwen can use AtomicChat’s Uncensored Q8 text encoder with the matching vision projector. Krea can use DreamFast’s Heretic Qwen3-VL-4B text encoder. These are encoder choices. [AtomicChat encoder](https://huggingface.co/AtomicChat/Qwen-Image-2.1-Turbo-Uncensored-GGUF) · [DreamFast encoder](https://huggingface.co/DreamFast/Qwen3-VL-4b-Heretic-ComfyUI)
+
+Prompting guidance draws on Qwen’s instructions for local edits and fidelity preservation and Krea’s advice on specifying visual style and composition. [Qwen Image 2.1](https://qwen.ai/blog?id=qwen-image-2.1) · [Krea 2 Turbo](https://www.krea.ai/models/krea-2-turbo)
 
 New profile presets follow the published model interfaces:
 
@@ -96,7 +100,7 @@ While an image call runs, its native row shows the operation and reported sampli
 
 Completed images also appear in a dedicated card at the bottom of their chat turn, outside the collapsed tool/process group. This uses the saved attachment and session-authorized image loader, works for existing conversation history, and does not depend on the assistant writing a Markdown image.
 
-Image tool calls show a small live progress label in the native disclosure row for `create_image`, `create_image_art` and `edit_image`, including when collapsed. Loading is indeterminate; approximate whole-job percentages follow actual sampler steps, then decoding, model restoration and attachment saving. Only a completed job reaches 100%. Tensor-loading byte counts and VAE tile counts are not mistaken for sampling. The indicator polls by the exact call ID once per second and stops when the call finishes or unmounts.
+The `create_image` disclosure row shows a small live progress label even when collapsed. Loading is indeterminate; approximate whole-job percentages follow actual sampler steps, then decoding, model restoration and attachment saving. Only a completed job reaches 100%. Tensor-loading byte counts and VAE tile counts are not mistaken for sampling. The indicator polls by the exact call ID once per second and stops when the call finishes or unmounts.
 
 ## Recommended models and verified downloads
 
